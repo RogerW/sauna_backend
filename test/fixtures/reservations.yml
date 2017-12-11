@@ -1,0 +1,19 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  start: 2017-08-14 09:54:41
+  duration: 1
+  state: 1
+  sauna: one
+  user: one
+  contact: one
+  guests_num: 1
+
+two:
+  start: 2017-08-14 09:54:41
+  duration: 1
+  state: 1
+  sauna: two
+  user: two
+  contact: two
+  guests_num: 1

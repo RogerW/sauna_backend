@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  sauna: one
+  description: MyString
+  services: 
+
+two:
+  sauna: two
+  description: MyString
+  services: 

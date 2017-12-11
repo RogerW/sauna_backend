@@ -1,0 +1,19 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  sauna: one
+  user: one
+  type: 1
+  state: 1
+  amount: 
+  discount: 
+  result: 
+
+two:
+  sauna: two
+  user: two
+  type: 1
+  state: 1
+  amount: 
+  discount: 
+  result: 

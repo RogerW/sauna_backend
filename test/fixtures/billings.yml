@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  sauna: one
+  day_type: 1
+  start_time: 1
+  end_time: 1
+  cost: 
+
+two:
+  sauna: two
+  day_type: 1
+  start_time: 1
+  end_time: 1
+  cost: 
