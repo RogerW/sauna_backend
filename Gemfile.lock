@@ -65,7 +65,7 @@ GEM
       nokogiri (~> 1.6, >= 1.6.8)
     bcrypt (3.1.11)
     builder (3.2.3)
-    capistrano (3.10.1)
+    capistrano (3.10.0)
       airbrussh (>= 1.0.0)
       i18n
       rake (>= 10.0.0)

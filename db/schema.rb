@@ -170,6 +170,9 @@ ActiveRecord::Schema.define(version: 20171205112800) do
     t.index ["sauna_id"], name: "index_users_saunas_on_sauna_id"
   end
 
+  create_table "users_tables", force: :cascade do |t|
+  end
+
   add_foreign_key "addresses", "cities"
   add_foreign_key "billings", "saunas"
   add_foreign_key "cities", "countries"

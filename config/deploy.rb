@@ -1,8 +1,8 @@
 # config valid for current version and patch releases of Capistrano
-lock "~> 3.10.1"
+lock '~> 3.10.0'
 
-set :application, "my_app_name"
-set :repo_url, "git@example.com:me/my_repo.git"
+set :application, 'sauna_cityprice_club'
+set :repo_url, 'git@bitbucket.org:m_sanama/sauna.git'
 
 # Default branch is :master
 # ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
