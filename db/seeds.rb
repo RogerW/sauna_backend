@@ -18,7 +18,3 @@ SaunaDescription.create(sauna: sauna, description: 'Lorem ipsum dolor sit amet, 
 Billing.create(cost_cents: 100_000, start_time: 0, end_time: 6, sauna: sauna)
 Billing.create(cost_cents: 200_000, start_time: 6, end_time: 22, sauna: sauna)
 Billing.create(cost_cents: 150_000, start_time: 22, end_time: 24, sauna: sauna)
-
-Contact.create(first_name: 'Ivan', last_name: 'Drago', user_id: 1)
-
-
