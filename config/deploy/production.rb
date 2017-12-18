@@ -1,5 +1,5 @@
 server 'cityprice.club', user: 'roger', roles: %w[app db web]
-after :finishing, 'deploy:puma_restart'
+after 'deploy:finishing', 'deploy:puma_restart'
 
 role :app, %w[roger@cityprice.club]
 role :web, %w[roger@cityprice.club]
