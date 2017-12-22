@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171205112800) do
+ActiveRecord::Schema.define(version: 20171222055601) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -18,14 +18,14 @@ ActiveRecord::Schema.define(version: 20171205112800) do
 
   create_table "addresses", force: :cascade do |t|
     t.string "street"
-    t.bigint "city_id"
     t.string "house"
     t.decimal "lat", precision: 9, scale: 6
     t.decimal "lon", precision: 9, scale: 6
     t.string "notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["city_id"], name: "index_addresses_on_city_id"
+    t.bigint "city_area_id"
+    t.index ["city_area_id"], name: "index_addresses_on_city_area_id"
   end
 
   create_table "billings", force: :cascade do |t|
@@ -46,6 +46,12 @@ ActiveRecord::Schema.define(version: 20171205112800) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["country_id"], name: "index_cities_on_country_id"
+  end
+
+  create_table "city_areas", force: :cascade do |t|
+    t.string "name", null: false
+    t.bigint "city_id"
+    t.index ["city_id"], name: "index_city_areas_on_city_id"
   end
 
   create_table "contacts", force: :cascade do |t|
@@ -121,7 +127,6 @@ ActiveRecord::Schema.define(version: 20171205112800) do
 
   create_table "saunas", force: :cascade do |t|
     t.string "name"
-    t.bigint "city_id"
     t.bigint "address_id"
     t.string "logo"
     t.decimal "rating", precision: 2, scale: 1
@@ -132,7 +137,6 @@ ActiveRecord::Schema.define(version: 20171205112800) do
     t.integer "logotype_file_size"
     t.datetime "logotype_updated_at"
     t.index ["address_id"], name: "index_saunas_on_address_id"
-    t.index ["city_id"], name: "index_saunas_on_city_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -173,9 +177,9 @@ ActiveRecord::Schema.define(version: 20171205112800) do
   create_table "users_tables", force: :cascade do |t|
   end
 
-  add_foreign_key "addresses", "cities"
   add_foreign_key "billings", "saunas"
   add_foreign_key "cities", "countries"
+  add_foreign_key "city_areas", "cities"
   add_foreign_key "invoices", "saunas"
   add_foreign_key "invoices_reservations", "invoices"
   add_foreign_key "invoices_reservations", "reservations"
@@ -184,7 +188,6 @@ ActiveRecord::Schema.define(version: 20171205112800) do
   add_foreign_key "sauna_descriptions", "saunas"
   add_foreign_key "sauna_galleries", "saunas"
   add_foreign_key "saunas", "addresses"
-  add_foreign_key "saunas", "cities"
   add_foreign_key "users_contacts", "contacts"
   add_foreign_key "users_saunas", "saunas"
 
@@ -221,17 +224,19 @@ ActiveRecord::Schema.define(version: 20171205112800) do
       saunas.rating,
       cities.name AS city,
       countries.name AS country,
+      city_areas.name AS city_area,
       addresses.street,
       addresses.house,
       addresses.lat,
       addresses.lon,
       addresses.notes
-     FROM ((((billings
+     FROM (((((billings
        JOIN saunas ON ((saunas.id = billings.sauna_id)))
-       JOIN cities ON ((cities.id = saunas.city_id)))
-       JOIN countries ON ((countries.id = cities.country_id)))
        JOIN addresses ON ((addresses.id = saunas.address_id)))
-    GROUP BY saunas.id, cities.name, countries.name, addresses.street, addresses.house, addresses.lat, addresses.lon, addresses.notes
+       JOIN city_areas ON ((city_areas.id = addresses.city_area_id)))
+       JOIN cities ON ((cities.id = city_areas.city_id)))
+       JOIN countries ON ((countries.id = cities.country_id)))
+    GROUP BY saunas.id, cities.name, city_areas.name, countries.name, addresses.street, addresses.house, addresses.lat, addresses.lon, addresses.notes
     ORDER BY saunas.name;
   SQL
 

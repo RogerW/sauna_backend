@@ -1,0 +1,4 @@
+class CityArea < ApplicationRecord
+
+end
+  

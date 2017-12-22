@@ -8,10 +8,10 @@ Rails.application.routes.draw do
   resources :reservations
   resources :users_contacts
   resources :addresses
-  resources :users_saunas
+  # resources :users_saunas
   
-  resources :cities
-  resources :countries
+  # resources :cities
+  # resources :countries
 
   resources :bookings, only: %i[index show create]
 
