@@ -9,7 +9,6 @@ Rails.application.routes.draw do
   resources :users_contacts
   resources :addresses
   # resources :users_saunas
-  
   # resources :cities
   # resources :countries
 

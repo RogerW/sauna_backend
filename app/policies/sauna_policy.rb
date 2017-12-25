@@ -20,14 +20,14 @@ class SaunaPolicy < ApplicationPolicy
   end
 
   def create?
-    @user.role == 'admin'
+    @user.admin?
   end
 
   def update?
-    @user.role == 'admin'
+    @user.admin?
   end
 
   def destroy?
-    @user.role == 'admin'
+    @user.admin?
   end
 end

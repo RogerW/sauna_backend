@@ -9,13 +9,9 @@ class SaunasController < ApplicationController
     authorize @sauna, :get_contacts?
 
     render json: Oj.dump(
-      {
-        collection: @collection
-      }
+      collection: @collection
     )
   end
-
-  
 
   private
 
@@ -29,7 +25,11 @@ class SaunasController < ApplicationController
   end
 
   # Only allow a trusted parameter "white list" through.
-  def sauna_params
-    params.require(:sauna).permit(:name, :city_id, :address_id, :logo, :rating)
+  def resource_params
+    params.require(:sauna).permit(
+      :name, :address_id, :logotype,
+      sauna_descriptions_attributes: [:description],
+      billings_attributes: %i[day_type start_time end_time]
+    )
   end
 end
