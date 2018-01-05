@@ -1,7 +1,7 @@
 class Booking::AddOrderPolicy < ApplicationPolicy
   class Scope < Scope
     attr_reader :user, :scope
-    
+
     def initialize(user, scope)
       super(user, scope)
     end
@@ -12,7 +12,6 @@ class Booking::AddOrderPolicy < ApplicationPolicy
   end
 
   def create?
-    @user.user? or user.saunas.exists?(id: scope.id)
+    @user.user? || user.admin?
   end
-
 end
