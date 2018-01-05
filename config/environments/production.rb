@@ -72,6 +72,19 @@ Rails.application.configure do
   # require 'syslog/logger'
   # config.logger = ActiveSupport::TaggedLogging.new(Syslog::Logger.new 'app-name')
 
+  config.action_mailer.default_url_options = { host: 'cityprice.club', port: 80 }
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    address: 'smtp.yandex.ru',
+    port: 587,
+    tls: true,
+    domain: 'cityprice.club',
+    authentication: 'plain',
+    user_name: 'robot@cityprice.club',
+    password: 'igkmaxhwxxjeqxmh',
+    enable_starttls_auto: true
+  }
+
   if ENV["RAILS_LOG_TO_STDOUT"].present?
     logger           = ActiveSupport::Logger.new(STDOUT)
     logger.formatter = config.log_formatter

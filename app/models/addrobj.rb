@@ -1,0 +1,2 @@
+class Addrobj < ApplicationRecord
+end

@@ -1,4 +1,0 @@
-class CityArea < ApplicationRecord
-
-end
-  

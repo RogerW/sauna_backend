@@ -7,10 +7,6 @@ Rails.application.routes.draw do
   resources :billings
   resources :reservations
   resources :users_contacts
-  resources :addresses
-  # resources :users_saunas
-  # resources :cities
-  # resources :countries
 
   resources :bookings, only: %i[index show create]
 

@@ -6,11 +6,4 @@ class Invoice < ApplicationRecord
   enum status: %i[created paid cash canceled_by_user canceled_by_admin canceled_by_system]
   enum inv_type: %i[prepaid postpaid]
 
-  def user
-    User.find user_id
-  end
-
-  def user=(u)
-    self.user_id = u.id
-  end
 end

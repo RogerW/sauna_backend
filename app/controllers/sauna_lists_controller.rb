@@ -70,6 +70,7 @@ class SaunaListsController < ApplicationController
         if AppUser.current_user.nil?
           sauna_ids = []
         else
+          # sauna_ids = UsersSauna.where(user_id: user.id).all.pluck(:sauna_id)
           sauna_ids = AppUser.current_user.saunas.all.pluck(:sauna_id)
         end
         puts sauna_ids

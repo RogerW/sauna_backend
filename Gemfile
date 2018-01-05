@@ -25,7 +25,7 @@ gem 'active_type'
 gem 'sidekiq', '~> 5.0.5'
 
 gem 'bcrypt'
-gem 'devise'
+gem 'devise', '~> 4.4.0'
 gem 'jwt'
 
 # for db views

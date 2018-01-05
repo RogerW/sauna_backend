@@ -10,24 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171227120921) do
+ActiveRecord::Schema.define(version: 20180104150228) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "adminpack"
   enable_extension "pg_trgm"
-
-  create_table "addresses", force: :cascade do |t|
-    t.string "street"
-    t.string "house"
-    t.decimal "lat", precision: 9, scale: 6
-    t.decimal "lon", precision: 9, scale: 6
-    t.string "notes"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.bigint "city_area_id"
-    t.index ["city_area_id"], name: "index_addresses_on_city_area_id"
-  end
 
   create_table "addrobj", primary_key: "aoguid", id: :uuid, default: nil, force: :cascade do |t|
     t.string "areacode", limit: 3
@@ -93,20 +81,6 @@ ActiveRecord::Schema.define(version: 20171227120921) do
     t.index ["sauna_id"], name: "index_billings_on_sauna_id"
   end
 
-  create_table "cities", force: :cascade do |t|
-    t.string "name"
-    t.bigint "country_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["country_id"], name: "index_cities_on_country_id"
-  end
-
-  create_table "city_areas", force: :cascade do |t|
-    t.string "name", null: false
-    t.bigint "city_id"
-    t.index ["city_id"], name: "index_city_areas_on_city_id"
-  end
-
   create_table "contacts", force: :cascade do |t|
     t.string "first_name"
     t.string "last_name"
@@ -117,12 +91,6 @@ ActiveRecord::Schema.define(version: 20171227120921) do
     t.bigint "contactable_id"
     t.string "middle_name"
     t.index ["contactable_type", "contactable_id"], name: "index_contacts_on_contactable_type_and_contactable_id"
-  end
-
-  create_table "countries", force: :cascade do |t|
-    t.string "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "invoices", force: :cascade do |t|
@@ -180,7 +148,6 @@ ActiveRecord::Schema.define(version: 20171227120921) do
 
   create_table "saunas", force: :cascade do |t|
     t.string "name"
-    t.bigint "address_id"
     t.string "logo"
     t.decimal "rating", precision: 2, scale: 1
     t.datetime "created_at", null: false
@@ -189,7 +156,13 @@ ActiveRecord::Schema.define(version: 20171227120921) do
     t.string "logotype_content_type"
     t.integer "logotype_file_size"
     t.datetime "logotype_updated_at"
-    t.index ["address_id"], name: "index_saunas_on_address_id"
+    t.uuid "city_uuid"
+    t.uuid "street_uuid"
+    t.string "full_address"
+    t.string "house"
+    t.decimal "lat", precision: 9, scale: 6
+    t.decimal "lon", precision: 9, scale: 6
+    t.string "note"
   end
 
   create_table "socrbase", primary_key: "kod_t_st", id: :string, limit: 4, force: :cascade do |t|
@@ -229,19 +202,14 @@ ActiveRecord::Schema.define(version: 20171227120921) do
     t.index ["contact_id"], name: "index_users_contacts_on_contact_id"
   end
 
-  create_table "users_saunas", force: :cascade do |t|
+  create_table "users_saunas", id: false, force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "sauna_id"
     t.index ["sauna_id"], name: "index_users_saunas_on_sauna_id"
   end
 
-  create_table "users_tables", force: :cascade do |t|
-  end
-
   add_foreign_key "addrobj", "addrobj", column: "parentguid", primary_key: "aoguid", name: "addrobj_parentguid_fkey", on_update: :cascade
   add_foreign_key "billings", "saunas"
-  add_foreign_key "cities", "countries"
-  add_foreign_key "city_areas", "cities"
   add_foreign_key "invoices", "saunas"
   add_foreign_key "invoices_reservations", "invoices"
   add_foreign_key "invoices_reservations", "reservations"
@@ -249,7 +217,6 @@ ActiveRecord::Schema.define(version: 20171227120921) do
   add_foreign_key "reservations", "saunas"
   add_foreign_key "sauna_descriptions", "saunas"
   add_foreign_key "sauna_galleries", "saunas"
-  add_foreign_key "saunas", "addresses"
   add_foreign_key "users_contacts", "contacts"
   add_foreign_key "users_saunas", "saunas"
 
@@ -284,21 +251,13 @@ ActiveRecord::Schema.define(version: 20171227120921) do
       saunas.logotype_file_size,
       saunas.logotype_updated_at,
       saunas.rating,
-      cities.name AS city,
-      countries.name AS country,
-      city_areas.name AS city_area,
-      addresses.street,
-      addresses.house,
-      addresses.lat,
-      addresses.lon,
-      addresses.notes
-     FROM (((((billings
+      saunas.full_address,
+      saunas.city_uuid,
+      saunas.street_uuid,
+      saunas.note
+     FROM (billings
        JOIN saunas ON ((saunas.id = billings.sauna_id)))
-       JOIN addresses ON ((addresses.id = saunas.address_id)))
-       JOIN city_areas ON ((city_areas.id = addresses.city_area_id)))
-       JOIN cities ON ((cities.id = city_areas.city_id)))
-       JOIN countries ON ((countries.id = cities.country_id)))
-    GROUP BY saunas.id, cities.name, city_areas.name, countries.name, addresses.street, addresses.house, addresses.lat, addresses.lon, addresses.notes
+    GROUP BY saunas.id
     ORDER BY saunas.name;
   SQL
 
