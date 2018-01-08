@@ -10,10 +10,10 @@ class Sauna < ApplicationRecord
 
   has_many :reservations
   has_many :billings
-  has_many :sauna_descriptions
+  has_one :sauna_description
 
   accepts_nested_attributes_for :billings, reject_if: proc { |attributes| attributes[:start_time, :end_time, :cost].blank? }, allow_destroy: true
-  accepts_nested_attributes_for :sauna_descriptions, reject_if: proc { |attributes| attributes[:description].blank? }, allow_destroy: true
+  accepts_nested_attributes_for :sauna_description, reject_if: proc { |attributes| attributes[:description].blank? }, allow_destroy: true
 
   has_many :contacts, as: :contactable
 

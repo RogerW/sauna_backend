@@ -12,13 +12,23 @@ class ReservationsController < ApplicationController
   def create
     authorize @model
 
-    @resource = @model.new(resource_params)
+    sauna = Sauna.find(params[:sauna_list_id])
+    contact = AppUser.current_user.contact
+    sauna_contact = sauna.contacts
+                         .find_or_create_by(
+                           first_name: contact.first_name,
+                           last_name: contact.last_name,
+                           middle_name: contact.middle_name,
+                           phone: contact.phone
+                         )
+
+    @resource = @model.new(resource_params.merge(contact_id: sauna_contact.id))
 
     if @resource.save
       @collection = @model.where(id: @resource.id)
       # ReservationCancelByNonPaymentWorker.perform_in(20.minutes, @collection) if AppUser.current_user.user?
 
-      render json: Oj.dump(@collection)
+      render json: { msg: 'Сауна забронирована.' }
     else
       render json: { errors: @resource.errors, msg: @resource.errors.full_messages.join(', ') }, status: 422
     end
@@ -57,6 +67,5 @@ class ReservationsController < ApplicationController
           .permit(:guests_num, :sauna_id)
           .merge(reserv_range: start_date_time...end_date_time)
           .merge(user_id: AppUser.current_user.id)
-          .merge(contact_id: AppUser.current_user.contact)
   end
 end

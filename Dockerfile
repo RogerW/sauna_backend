@@ -47,7 +47,7 @@ LABEL maintainer='Stanislav Vorobev <stsvorobev@gmail.com>'
 RUN apt-get update && apt-get install -y build-essential \
                                         nodejs libpq-dev unzip \
                                         git \
-                                        imagemagick \
+                                        imagemagick webp\
                                         runit --no-install-recommends && \
                                         rm -rf /var/lib/apt/lists/*
 

@@ -9,17 +9,16 @@ class Auth::RegistrationsController < Devise::RegistrationsController
     resource.save
 
     if resource.persisted?
-      sign_up(resource_name, resource)
+      # sign_up(resource_name, resource)
 
-      exp = Time.now.to_i + 31 * 24 * 3600 # one month
-      exp_payload = {exp: exp, email: current_user.email  }
+      # exp = Time.now.to_i + 31 * 24 * 3600 # one month
+      # exp_payload = {exp: exp, email: current_user.email  }
 
-      token = JWT.encode(exp_payload, ENV['JWT_SECRET_KEY'], 'HS256')
+      # token = JWT.encode(exp_payload, ENV['JWT_SECRET_KEY'], 'HS256')
+      # 
 
       render json: {
-        msg: 'Вы успешно зарегистрировались!',
-        current_user: current_user.public_fields,
-        jwt: token
+        msg: 'Вы успешно зарегистрировались! Вам будет отправлен email с инструкциями.'
       }
     else
       render json: {

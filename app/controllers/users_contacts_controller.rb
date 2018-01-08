@@ -1,51 +1,29 @@
 class UsersContactsController < ApplicationController
-  before_action :set_users_contact, only: [:show, :update, :destroy]
-
-  # GET /users_contacts
-  def index
-    @users_contacts = UsersContact.all
-
-    render json: @users_contacts
-  end
-
-  # GET /users_contacts/1
   def show
-    render json: @users_contact
+    allow_columns = %w[last_name first_name middle_name phone]
+
+    render json: Oj.dump(
+      collection: AppUser.current_user.contact.as_json.delete_if { |k, _v| !allow_columns.include? k },
+      single: true
+    )
   end
 
-  # POST /users_contacts
   def create
-    @users_contact = UsersContact.new(users_contact_params)
-
-    if @users_contact.save
-      render json: @users_contact, status: :created, location: @users_contact
-    else
-      render json: @users_contact.errors, status: :unprocessable_entity
+    unless AppUser.current_user.contact
+      @resource = AppUser.current_user.create_contact(resource_params)
     end
-  end
 
-  # PATCH/PUT /users_contacts/1
-  def update
-    if @users_contact.update(users_contact_params)
-      render json: @users_contact
+    if AppUser.current_user.contact.update(resource_params)
+      render json: { msg: 'Контактные данные успешно обновлены.' }
     else
-      render json: @users_contact.errors, status: :unprocessable_entity
+      render json: { errors: @resource.errors, msg: @resource.errors.full_messages.join(', ') }, status: 422
     end
-  end
-
-  # DELETE /users_contacts/1
-  def destroy
-    @users_contact.destroy
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_users_contact
-      @users_contact = UsersContact.find(params[:id])
-    end
 
-    # Only allow a trusted parameter "white list" through.
-    def users_contact_params
-      params.require(:users_contact).permit(:user_id, :contact_id)
-    end
+  def resource_params
+    params.require(:contacts)
+          .permit(:last_name, :first_name, :middle_name, :phone)
+  end
 end

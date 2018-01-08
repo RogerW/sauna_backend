@@ -6,14 +6,15 @@ Rails.application.routes.draw do
   resources :reservations_invoices
   resources :billings
   resources :reservations
-  resources :users_contacts
+
+  resources :users_contacts, only: %i[show create]
 
   resources :bookings, only: %i[index show create]
 
   resources :saunas do
     namespace :booking do
-      resources :add_orders, only: %i[ create ]
-    end 
+      resources :add_orders, only: %i[create]
+    end
     resources :sauna_descriptions, only: %i[index show]
     get :get_contacts, on: :member
   end
@@ -21,7 +22,8 @@ Rails.application.routes.draw do
   devise_for :users, controllers: {
     sessions: 'auth/sessions',
     registrations: 'auth/registrations',
-    passwords: 'auth/passwords'
+    passwords: 'auth/passwords',
+    confirmations: 'auth/confirmations'
   }
 
   resources :sauna_lists, only: %i[ index show ] do
