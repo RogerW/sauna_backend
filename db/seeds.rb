@@ -14,7 +14,7 @@ sauna = Sauna.create(full_address: address['full_address'] + ', 10', name: 'ParP
 
 user.saunas << sauna
 
-sauna.sauna_descriptions.create(description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque eget cursus est. Cras in aliquet lorem. Quisque tempus tincidunt neque, vel placerat ipsum placerat quis. Etiam bibendum, dui non tristique pharetra, dolor eros ornare velit, id auctor eros metus in arcu. Curabitur neque ante, suscipit luctus ultricies dictum, fermentum at justo. Ut auctor porttitor semper. Phasellus volutpat mattis egestas. Praesent interdum, augue id tincidunt rhoncus, nibh libero tristique turpis, quis venenatis tellus ex et ipsum. Donec euismod dolor eget tempus scelerisque. Aliquam luctus nibh sed erat tempor blandit. Ut interdum lacinia molestie. Nullam aliquet lobortis semper.')
+sauna.create_sauna_description(description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque eget cursus est. Cras in aliquet lorem. Quisque tempus tincidunt neque, vel placerat ipsum placerat quis. Etiam bibendum, dui non tristique pharetra, dolor eros ornare velit, id auctor eros metus in arcu. Curabitur neque ante, suscipit luctus ultricies dictum, fermentum at justo. Ut auctor porttitor semper. Phasellus volutpat mattis egestas. Praesent interdum, augue id tincidunt rhoncus, nibh libero tristique turpis, quis venenatis tellus ex et ipsum. Donec euismod dolor eget tempus scelerisque. Aliquam luctus nibh sed erat tempor blandit. Ut interdum lacinia molestie. Nullam aliquet lobortis semper.')
 
 sauna.billings.create(cost_cents: 100_000, start_time: 0, end_time: 6)
 sauna.billings.create(cost_cents: 200_000, start_time: 6, end_time: 22)

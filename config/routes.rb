@@ -4,7 +4,7 @@ Rails.application.routes.draw do
   resources :invoices
   resources :contacts
   resources :reservations_invoices
-  resources :billings
+  
   resources :reservations
 
   resources :users_contacts, only: %i[show create]
@@ -16,6 +16,7 @@ Rails.application.routes.draw do
       resources :add_orders, only: %i[create]
     end
     resources :sauna_descriptions, only: %i[index show]
+    resources :billings
     get :get_contacts, on: :member
   end
 

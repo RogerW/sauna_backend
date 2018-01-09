@@ -98,4 +98,4 @@ ENV RAILS_ENV=developmet RACK_ENV=development
 EXPOSE 3000
 
 # Run puma server by default
-CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]                              
+CMD ["bundle", "exec", "thin", "-C", "config/thin.yml"]                              

@@ -14,17 +14,19 @@ class SaunasController < ApplicationController
   end
 
   def create
-    @resource = @model.new resource_params
+    street = Sauna.find_by_sql(['SELECT fstf_AddressObjects_SearchByName(?, NULL, ?) as addr', params[:sauna][:street], params[:sauna][:city]]).first
+
+    full_address = Sauna.find_by_sql(['select fsfn_AddressObjects_TreeActualName(?) as full_address', street.addr.match(/([\d\w\-]+)/)[0]]).first
+
+    @resource = @model.new(resource_params
+      .merge(street_uuid: street['addr'].match(/([\d\w\-]+)/)[0])
+      .merge(full_address: full_address['full_address']))
 
     authorize @resource
 
-    # street = Sauna.find_by_sql ['SELECT fstf_AddressObjects_SearchByName(?, NULL, ?) as addr', params[:street], params[:city]]
-
-    # full_address = Sauna.find_by_sql(["select fsfn_AddressObjects_TreeActualName(?) as full_address", street.addr.match(/([\d\w\-]+)/)[0]]).first
-
     # @resource = @model.new resource_params
 
-    if params[:sauna][:logotype]
+    if params[:sauna][:logotype][:value]
       image_file                   = Paperclip.io_adapters.for("data:#{params[:sauna][:logotype][:filetype]};base64,#{params[:sauna][:logotype][:value]}")
       image_file.original_filename = params[:sauna][:logotype][:filename]
       image_file.content_type      = params[:sauna][:logotype][:filetype]
@@ -32,7 +34,9 @@ class SaunasController < ApplicationController
     end
 
     if @resource.save
-      # @resource.create(description: params[:sauna][:description])
+      @resource.create_sauna_description(description: params[:sauna][:description])
+
+      AppUser.current_user.saunas << @resource
       render json: { msg: 'Сауна успешно создана. Ожидайте проверки модератором!' }
     else
       render json: { errors: @resource.errors, msg: @resource.errors.full_messages.join(', ') }, status: 422
@@ -59,8 +63,8 @@ class SaunasController < ApplicationController
   def resource_params
     params.require(:sauna).permit(
       :name,
-             sauna_descriptions_attributes: [:description],
-             billings_attributes: %i[day_type start_time end_time]
+      sauna_descriptions_attributes: [:description],
+      billings_attributes: %i[day_type start_time end_time]
     )
   end
 end
