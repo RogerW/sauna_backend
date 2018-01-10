@@ -15,7 +15,7 @@ Rails.application.routes.draw do
     namespace :booking do
       resources :add_orders, only: %i[create]
     end
-    resources :sauna_descriptions, only: %i[index show]
+    resources :sauna_descriptions, only: %i[index create update]
     resources :billings
     get :get_contacts, on: :member
   end

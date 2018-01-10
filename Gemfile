@@ -11,7 +11,7 @@ gem 'rails', '~> 5.1.2'
 # Use postgresql as the database for Active Record
 gem 'pg', '~> 0.18'
 # Use Puma as the app server
-gem "passenger", require: "phusion_passenger/rack_handler"
+gem 'passenger', require: 'phusion_passenger/rack_handler'
 gem 'pundit'
 gem 'rabl'
 
@@ -48,9 +48,9 @@ gem 'email_validator'
 
 group :development do
   gem 'capistrano'
+  gem 'capistrano-passenger'
   gem 'capistrano-rails'
   gem 'capistrano-rvm'
-  gem 'capistrano-passenger'
 end
 
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible

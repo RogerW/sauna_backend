@@ -1,7 +1,7 @@
 class SaunasController < ApplicationController
   include Spa
 
-  before_action :set_sauna, only: %i[show update destroy get_contacts]
+  skip_before_action :authenticate_user!, only: %i[index show]
 
   def get_contacts
     @collection = @sauna.contacts.all
@@ -46,18 +46,17 @@ class SaunasController < ApplicationController
   private
 
   def set_model
-    @model = AppUser.current_user.saunas
-  end
-
-  # Use callbacks to share common setup or constraints between actions.
-  def set_sauna
-    @sauna = Sauna.find(params[:id])
+    @model = if AppUser.current_user
+               AppUser.current_user.saunas
+             else
+               Sauna
+             end
   end
 
   def decode_base64
     decoded_data = Base64.decode64(params[:sauna][:logotype][:value])
     StringIO.new(decoded_data)
-  end
+    end
 
   # Only allow a trusted parameter "white list" through.
   def resource_params
