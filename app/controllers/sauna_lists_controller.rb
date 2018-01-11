@@ -12,9 +12,10 @@ class SaunaListsController < ApplicationController
     result = []
 
     collection.each_with_index do |e, i|
-      result.push collection_json[i].merge(logotype_image: e.logotype.url(:large),
-                                           logotype_medium: e.logotype.url(:medium),
-                                           logotype_thumb: e.logotype.url(:thumb))
+      sauna = Sauna.find e.id
+      result.push collection_json[i].merge(logotype_image: sauna.logotype.url(:large),
+                                           logotype_medium: sauna.logotype.url(:medium),
+                                           logotype_thumb: sauna.logotype.url(:thumb))
     end
 
     render json: Oj.dump(

@@ -48,5 +48,8 @@ module Sanama
     # }
 
     Paperclip::Attachment.default_options[:storage] = :filesystem
+    Paperclip::Attachment.default_options[:url] = '/assets/system/:hash.:extension'
+    Paperclip::Attachment.default_options[:path] = ':rails_root/public/system/:hash.:extension'
+    Paperclip::Attachment.default_options[:hash_secret] = 'longSecretString123'
   end
 end

@@ -10,10 +10,64 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180106113421) do
+ActiveRecord::Schema.define(version: 20180111103858) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "pg_trgm"
+  enable_extension "adminpack"
+
+  create_table "addrobj", primary_key: "aoguid", id: :uuid, default: nil, force: :cascade do |t|
+    t.string "areacode", limit: 3
+    t.string "autocode", limit: 1
+    t.string "citycode", limit: 3
+    t.string "code", limit: 17
+    t.date "enddate"
+    t.string "formalname", limit: 120
+    t.string "ifnsfl", limit: 4
+    t.string "ifnsul", limit: 4
+    t.string "offname", limit: 120
+    t.string "okato", limit: 11
+    t.string "oktmo", limit: 11
+    t.string "placecode", limit: 3
+    t.string "plaincode", limit: 15
+    t.string "postalcode", limit: 6
+    t.string "regioncode", limit: 2
+    t.string "shortname", limit: 10
+    t.date "startdate"
+    t.string "streetcode", limit: 4
+    t.string "terrifnsfl", limit: 4
+    t.string "terrifnsul", limit: 4
+    t.date "updatedate"
+    t.string "ctarcode", limit: 3
+    t.string "extrcode", limit: 4
+    t.string "sextcode", limit: 3
+    t.string "plancode", limit: 4
+    t.string "cadnum", limit: 100
+    t.decimal "divtype", precision: 1
+    t.integer "actstatus"
+    t.uuid "aoid"
+    t.integer "aolevel"
+    t.integer "centstatus"
+    t.integer "currstatus"
+    t.integer "livestatus"
+    t.uuid "nextid"
+    t.uuid "normdoc"
+    t.integer "operstatus"
+    t.uuid "parentguid"
+    t.uuid "previd"
+    t.index "formalname gin_trgm_ops", name: "formalname_trgm_idx", using: :gin
+    t.index "offname gin_trgm_ops", name: "offname_trgm_idx", using: :gin
+    t.index ["aoguid"], name: "aoguid_pk_idx", unique: true
+    t.index ["aoid"], name: "aoid_idx", unique: true
+    t.index ["aolevel"], name: "aolevel_idx"
+    t.index ["currstatus"], name: "currstatus_idx"
+    t.index ["formalname"], name: "formalname_idx"
+    t.index ["offname"], name: "offname_idx"
+    t.index ["parentguid"], name: "parentguid_idx"
+    t.index ["shortname", "aolevel"], name: "shortname_aolevel_idx"
+    t.index ["shortname"], name: "shortname_idx"
+  end
 
   create_table "billings", force: :cascade do |t|
     t.bigint "sauna_id"
@@ -86,9 +140,12 @@ ActiveRecord::Schema.define(version: 20180106113421) do
 
   create_table "sauna_galleries", force: :cascade do |t|
     t.bigint "sauna_id"
-    t.string "photo"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "photo_file_name"
+    t.string "photo_content_type"
+    t.integer "photo_file_size"
+    t.datetime "photo_updated_at"
     t.index ["sauna_id"], name: "index_sauna_galleries_on_sauna_id"
   end
 
@@ -109,6 +166,14 @@ ActiveRecord::Schema.define(version: 20180106113421) do
     t.decimal "lat", precision: 9, scale: 6
     t.decimal "lon", precision: 9, scale: 6
     t.string "note"
+  end
+
+  create_table "socrbase", primary_key: "kod_t_st", id: :string, limit: 4, force: :cascade do |t|
+    t.string "socrname", limit: 50
+    t.string "scname", limit: 10
+    t.integer "level"
+    t.index ["kod_t_st"], name: "kod_t_st_idx", unique: true
+    t.index ["scname", "level"], name: "scname_level_idx"
   end
 
   create_table "users", force: :cascade do |t|
@@ -146,6 +211,7 @@ ActiveRecord::Schema.define(version: 20180106113421) do
     t.index ["sauna_id"], name: "index_users_saunas_on_sauna_id"
   end
 
+  add_foreign_key "addrobj", "addrobj", column: "parentguid", primary_key: "aoguid", name: "addrobj_parentguid_fkey", on_update: :cascade
   add_foreign_key "billings", "saunas"
   add_foreign_key "invoices", "saunas"
   add_foreign_key "invoices_reservations", "invoices"

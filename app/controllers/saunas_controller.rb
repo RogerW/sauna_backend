@@ -43,6 +43,35 @@ class SaunasController < ApplicationController
     end
   end
 
+  def update
+    authorize @resource, :update?
+
+    street = Sauna.find_by_sql(['SELECT fstf_AddressObjects_SearchByName(?, NULL, ?) as addr', params[:sauna][:street], params[:sauna][:city]]).first
+
+    full_address = Sauna.find_by_sql(['select fsfn_AddressObjects_TreeActualName(?) as full_address', street.addr.match(/([\d\w\-]+)/)[0]]).first
+
+    @resource.assign_attributes(resource_params)
+    @resource.street_uuid = street['addr'].match(/([\d\w\-]+)/)[0]
+    @resource.full_address = full_address['full_address'] + ', д ' + params[:sauna][:house]
+
+    if params[:sauna][:logotype] != '' && params[:sauna][:logotype][:value]
+      image_file                   = Paperclip.io_adapters.for("data:#{params[:sauna][:logotype][:filetype]};base64,#{params[:sauna][:logotype][:value]}")
+      image_file.original_filename = params[:sauna][:logotype][:filename]
+      image_file.content_type      = params[:sauna][:logotype][:filetype]
+      @resource.logotype           = image_file
+    end
+
+    if @resource.save
+      render json: Oj.dump(
+        collection: @resource,
+        single: true,
+        msg: "#{@model.name} успешно обновлен"
+      )
+    else
+      render json: { errors: @resource.errors, msg: @resource.errors.full_messages.join(', ') }, status: 422
+    end
+  end
+
   private
 
   def set_model
@@ -61,9 +90,7 @@ class SaunasController < ApplicationController
   # Only allow a trusted parameter "white list" through.
   def resource_params
     params.require(:sauna).permit(
-      :name,
-      sauna_descriptions_attributes: [:description],
-      billings_attributes: %i[day_type start_time end_time]
+      :name, :house, :lat, :lon, :notes
     )
   end
 end

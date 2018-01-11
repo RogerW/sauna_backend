@@ -34,7 +34,12 @@ module Spa
     def update
       authorize @resource, :update?
       if @resource.update(resource_params)
-        render json: Oj.dump(@resource)
+        render json: Oj.dump(
+          {
+            collection: @resource,
+            single: true,
+            msg: "#{@model.name} успешно обновлен"
+          })
       else
         render json: { errors: @resource.errors, msg: @resource.errors.full_messages.join(', ') }, status: 422
       end

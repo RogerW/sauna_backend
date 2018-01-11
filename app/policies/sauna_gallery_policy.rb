@@ -1,4 +1,4 @@
-class SaunaPolicy < ApplicationPolicy
+class SaunaGalleryPolicy < ApplicationPolicy
   class Scopee < Scope
     attr_reader :user, :scope
     
@@ -15,12 +15,8 @@ class SaunaPolicy < ApplicationPolicy
     @sauna = sauna
   end
 
-  def get_contacts?
-    UsersSauna.where(user_id: user.id).exists?
-  end
-
   def create?
-    @user.admin?
+    @user.admin? && UsersSauna.where(user_id: user.id).exists?
   end
 
   def update?

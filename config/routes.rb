@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-  resources :sauna_galleries
   resources :sauna_descriptions
   resources :invoices
   resources :contacts
@@ -17,6 +16,7 @@ Rails.application.routes.draw do
     end
     resources :sauna_descriptions, only: %i[index create update]
     resources :billings
+    resources :sauna_galleries
     get :get_contacts, on: :member
   end
 

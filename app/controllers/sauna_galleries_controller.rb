@@ -1,51 +1,81 @@
 class SaunaGalleriesController < ApplicationController
-  before_action :set_sauna_gallery, only: [:show, :update, :destroy]
+  include Spa
+  skip_before_action :authenticate_user!, only: %i[index show]
 
-  # GET /sauna_galleries
   def index
-    @sauna_galleries = SaunaGallery.all
+    collection = @model.all
 
-    render json: @sauna_galleries
+    collection_json = collection.as_json
+
+    result = []
+    collection.each_with_index do |e, i|
+      result.push collection_json[i].merge(photo_image: e.photo.url(:large),
+                                           photo_medium: e.photo.url(:medium),
+                                           photo_thumb: e.photo.url(:thumb))
+    end
+
+    render json: Oj.dump(
+      collection: result
+    )
   end
 
-  # GET /sauna_galleries/1
-  def show
-    render json: @sauna_gallery
-  end
-
-  # POST /sauna_galleries
   def create
-    @sauna_gallery = SaunaGallery.new(sauna_gallery_params)
+    @resource = @model.new resource_params
+    authorize @resource
 
-    if @sauna_gallery.save
-      render json: @sauna_gallery, status: :created, location: @sauna_gallery
+    if params[:sauna_gallery][:photo][:value]
+      image_file                   = Paperclip.io_adapters.for("data:#{params[:sauna_gallery][:photo][:filetype]};base64,#{params[:sauna_gallery][:photo][:value]}")
+      image_file.original_filename = params[:sauna_gallery][:photo][:filename]
+      image_file.content_type      = params[:sauna_gallery][:photo][:filetype]
+      @resource.photo              = image_file
+    end
+
+    if @resource.save
+      @collection = @model.where(id: @resource.id)
+
+      render json: { msg: 'Фото добавлено!' }
     else
-      render json: @sauna_gallery.errors, status: :unprocessable_entity
+      render json: { errors: @resource.errors, msg: @resource.errors.full_messages.join(', ') }, status: 422
     end
   end
 
-  # PATCH/PUT /sauna_galleries/1
   def update
-    if @sauna_gallery.update(sauna_gallery_params)
-      render json: @sauna_gallery
-    else
-      render json: @sauna_gallery.errors, status: :unprocessable_entity
-    end
-  end
+    authorize @resource, :update?
 
-  # DELETE /sauna_galleries/1
-  def destroy
-    @sauna_gallery.destroy
+    if params[:sauna_gallery][:photo] != '' && params[:sauna_gallery][:photo][:value]
+      image_file                   = Paperclip.io_adapters.for("data:#{params[:sauna_gallery][:photo][:filetype]};base64,#{params[:sauna_gallery][:photo][:value]}")
+      image_file.original_filename = params[:sauna_gallery][:photo][:filename]
+      image_file.content_type      = params[:sauna_gallery][:photo][:filetype]
+      @resource.photo              = image_file
+    end
+
+    if @resource.save
+      render json: Oj.dump(
+        collection: @resource,
+        single: true,
+        msg: "#{@model.name} успешно обновлен"
+      )
+    else
+      render json: { errors: @resource.errors, msg: @resource.errors.full_messages.join(', ') }, status: 422
+    end
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_sauna_gallery
-      @sauna_gallery = SaunaGallery.find(params[:id])
+    def set_model
+      @model = if params[:sauna_id]
+                Sauna.find(params[:sauna_id]).sauna_galleries
+              else
+                SaunaGallery
+              end
     end
 
+    def decode_base64
+      decoded_data = Base64.decode64(params[:sauna][:logotype][:value])
+      StringIO.new(decoded_data)
+      end
+
     # Only allow a trusted parameter "white list" through.
-    def sauna_gallery_params
-      params.require(:sauna_gallery).permit(:sauna_id, :photo)
+    def resource_params
+      params.require(:sauna_gallery).permit(:photo)
     end
 end
