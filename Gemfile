@@ -11,7 +11,7 @@ gem 'rails', '~> 5.1.2'
 # Use postgresql as the database for Active Record
 gem 'pg', '~> 0.18'
 # Use Puma as the app server
-gem 'passenger', require: 'phusion_passenger/rack_handler'
+gem 'puma'
 gem 'pundit'
 gem 'rabl'
 
