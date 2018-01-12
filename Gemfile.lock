@@ -125,11 +125,9 @@ GEM
       cocaine (~> 0.5.5)
       mime-types
       mimemagic (~> 0.3.0)
-    passenger (5.1.12)
-      rack
-      rake (>= 0.8.1)
     pg (0.21.0)
     public_suffix (3.0.1)
+    puma (3.10.0)
     pundit (1.1.0)
       activesupport (>= 3.0.0)
     rabl (0.13.1)
@@ -225,8 +223,8 @@ DEPENDENCIES
   oj
   oj_mimic_json
   paperclip (~> 5.0.0)
-  passenger
   pg (~> 0.18)
+  puma
   pundit
   rabl
   rack-cors
