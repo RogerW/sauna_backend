@@ -45,11 +45,14 @@ class ApplicationController < ActionController::API
       # token = request.headers['authorization'].to_s.split(' ').last
       token = params[:jwt]
       decoded_token = JWT.decode(token, ENV['JWT_SECRET_KEY'], true, algorithm: 'HS256')
+      puts decoded_token
       email = decoded_token[0]['email']
       AppUser.current_user = User.find_by_email(email)
     rescue JWT::ExpiredSignature
+      puts 'ExpiredSignature'
       AppUser.current_user = nil
     rescue JWT::DecodeError
+      puts 'DecodeError'
       AppUser.current_user = nil
     end
   end

@@ -1,13 +1,9 @@
 class Auth::SessionsController < Devise::SessionsController
-  skip_before_action :authenticate_user!, only: %i[ create ]
+  skip_before_action :authenticate_user!, only: %i[create new]
   # skip_before_action :set_current_user, only: %i[ create ]
 
   def create
-    puts "session create"
-    puts auth_options
     self.resource = warden.authenticate(auth_options)
-
-    puts warden.authenticate(auth_options)
 
     if resource
       sign_in resource_name, resource
@@ -31,8 +27,7 @@ class Auth::SessionsController < Devise::SessionsController
     end
   end
 
-  def new
-  end
+  def new; end
 
   def destroy
     Devise.sign_out_all_scopes ? sign_out : sign_out(resource_name)
