@@ -10,7 +10,7 @@ set :deploy_to, '/usr/local/cityprice'
 set :repo_url, 'git@bitbucket.org:m_sanama/sauna_backend.git'
 
 set :linked_files, %w[config/database.yml config/secrets.yml config/puma.rb config/initializers/cors.rb config/initializers/devise.rb]
-set :linked_dirs, %w[bin log tmp/pids tmp/cache tmp/socket]
+set :linked_dirs, %w[bin log tmp/pids tmp/cache tmp/socket public]
 
 namespace :deploy do
   desc 'Reload Puma'
