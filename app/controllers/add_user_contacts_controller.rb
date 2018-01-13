@@ -1,13 +1,16 @@
 class AddUserContactsController < ApplicationController
-  
   def create
     unless AppUser.current_user.contact
       @resource = AppUser.current_user.create_contact(resource_params)
+    end
 
     if @resource.update(resource_params)
       render json: Oj.dump(@resource)
     else
-      render json: { errors: @resource.errors, msg: @resource.errors.full_messages.join(', ') }, status: 422
+      render json: {
+        errors: @resource.errors,
+        msg: @resource.errors.full_messages.join(', ')
+      }, status: 422
     end
   end
 
