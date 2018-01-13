@@ -16,7 +16,10 @@ class UsersContactsController < ApplicationController
     if AppUser.current_user.contact.update(resource_params)
       render json: { msg: 'Контактные данные успешно обновлены.' }
     else
-      render json: { errors: @resource.errors, msg: @resource.errors.full_messages.join(', ') }, status: 422
+      render json: {
+        errors: @resource.errors,
+        msg: @resource.errors.full_messages.join(', ')
+      }, status: 422
     end
   end
 
