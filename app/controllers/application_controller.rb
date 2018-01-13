@@ -42,8 +42,8 @@ class ApplicationController < ActionController::API
 
   def set_current_user
     begin
-      puts request.headers['authorization']
-      token = request.headers['authorization'].to_s.split(' ').last
+      # token = request.headers['authorization'].to_s.split(' ').last
+      token = params[:jwt]
       decoded_token = JWT.decode(token, ENV['JWT_SECRET_KEY'], true, algorithm: 'HS256')
       email = decoded_token[0]['email']
       AppUser.current_user = User.find_by_email(email)
