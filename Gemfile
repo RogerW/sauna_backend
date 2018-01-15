@@ -34,6 +34,7 @@ gem 'scenic'
 gem 'paperclip', '~> 5.0.0'
 
 gem 'email_validator'
+gem 'aasm'
 
 # gem 'devise_token_auth'
 

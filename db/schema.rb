@@ -10,12 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180111103858) do
+ActiveRecord::Schema.define(version: 20180115095603) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "adminpack"
   enable_extension "pg_trgm"
+  enable_extension "adminpack"
 
   create_table "addrobj", primary_key: "aoguid", id: :uuid, default: nil, force: :cascade do |t|
     t.string "areacode", limit: 3
@@ -262,6 +262,22 @@ ActiveRecord::Schema.define(version: 20180111103858) do
        JOIN saunas ON ((saunas.id = billings.sauna_id)))
     GROUP BY saunas.id
     ORDER BY saunas.name;
+  SQL
+
+  create_view "user_orders",  sql_definition: <<-SQL
+      SELECT reservations.id,
+      reservations.id AS reservation_id,
+      reservations.user_id,
+      lower(reservations.reserv_range) AS start_date_time,
+      upper(reservations.reserv_range) AS end_date_time,
+      reservations.guests_num,
+      reservations.status,
+      saunas.id AS sauna_id,
+      saunas.name,
+      saunas.full_address
+     FROM ((reservations
+       LEFT JOIN saunas ON ((saunas.id = reservations.sauna_id)))
+       LEFT JOIN users_saunas ON ((users_saunas.sauna_id = saunas.id)));
   SQL
 
 end

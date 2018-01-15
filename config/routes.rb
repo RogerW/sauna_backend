@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   resources :sauna_descriptions
   resources :invoices
   resources :contacts
-  resources :reservations_invoices
+  resources :user_orders, only: %i[index show]
   
   resources :reservations
 

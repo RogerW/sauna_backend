@@ -7,7 +7,7 @@ class Reservation < ApplicationRecord
   validate :check_intersection_range
   validate :start_less_end
 
-  after_save :create_invoices
+  after_create :create_invoices
 
   after_initialize :set_status, if: :new_record?
   after_save :create_sheduler
