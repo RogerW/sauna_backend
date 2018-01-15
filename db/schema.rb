@@ -10,12 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180115095603) do
+ActiveRecord::Schema.define(version: 20180115152531) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "pg_trgm"
   enable_extension "adminpack"
+  enable_extension "pg_trgm"
 
   create_table "addrobj", primary_key: "aoguid", id: :uuid, default: nil, force: :cascade do |t|
     t.string "areacode", limit: 3
@@ -105,6 +105,7 @@ ActiveRecord::Schema.define(version: 20180115095603) do
     t.string "result_currency", default: "USD", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "aasm_state"
     t.index ["sauna_id"], name: "index_invoices_on_sauna_id"
   end
 
@@ -125,6 +126,7 @@ ActiveRecord::Schema.define(version: 20180115095603) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "status", default: 0
+    t.string "aasm_state"
     t.index ["contact_id"], name: "index_reservations_on_contact_id"
     t.index ["sauna_id"], name: "index_reservations_on_sauna_id"
   end
@@ -268,10 +270,10 @@ ActiveRecord::Schema.define(version: 20180115095603) do
       SELECT reservations.id,
       reservations.id AS reservation_id,
       reservations.user_id,
+      reservations.aasm_state AS state,
       lower(reservations.reserv_range) AS start_date_time,
       upper(reservations.reserv_range) AS end_date_time,
       reservations.guests_num,
-      reservations.status,
       saunas.id AS sauna_id,
       saunas.name,
       saunas.full_address

@@ -39,14 +39,28 @@ class ReservationsController < ApplicationController
 
     authorize resource
     if AppUser.current_user.admin?
-      resource.cancel_by_admin!
+      if resource.may_cancel_by_admin?
+        esource.cancel_by_admin!
+        render json: Oj.dump(
+          msg: 'Заказ отменен'
+        )
+      else
+        render json: Oj.dump(
+          msg: 'Невозможно отменить заказ!'
+        )
+      end
     else
-      resource.cancel_by_user!
+      if resource.may_cancel_by_user?
+        resource.cancel_by_user!
+        render json: Oj.dump(
+          msg: 'Заказ отменен'
+        )
+      else
+        render json: Oj.dump(
+          msg: 'Невозможно отменить заказ!'
+        )
+      end
     end
-
-    render json: Oj.dump(
-      msg: 'Заказ отменен'
-    )
   end
 
   private

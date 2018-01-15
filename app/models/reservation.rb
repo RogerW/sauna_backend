@@ -1,4 +1,52 @@
 class Reservation < ApplicationRecord
+  include AASM
+
+  # enum status: %i[created_by_user created_by_admin created_by_system appoved execute done cancel_by_user cancel_by_admin cancel_by_system]
+
+  aasm do
+    state :created_by_user, initial: true
+    state :created_by_admin
+    state :created_by_system
+    state :approved
+    state :executing
+    state :done
+    state :canceled_by_user
+    state :canceled_by_admin
+    state :canceled_by_system
+
+    event :create_by_admin do
+      transitions from: [:created_by_user], to: :created_by_admin
+    end
+
+    event :create_by_system do
+      transitions from: [:created_by_user], to: :created_by_system
+    end
+
+    event :approve do
+      transitions from: %i[created_by_user created_by_admin created_by_system], to: :approved
+    end
+
+    event :execute do
+      transitions from: %i[created_by_admin created_by_system], to: :executing
+    end
+
+    event :complete do
+      transitions from: [:executing], to: :done
+    end
+
+    event :cancel_by_user do
+      transitions from: %i[created_by_user created_by_system approved], to: :canceled_by_user
+    end
+
+    event :cancel_by_admin do
+      transitions from: %i[created_by_admin created_by_system], to: :canceled_by_admin
+    end
+
+    event :cancel_by_system do
+      transitions from: %i[created_by_system created_by_admin created_by_system], to: :canceled_by_system
+    end
+  end
+
   belongs_to :sauna
   belongs_to :user
   belongs_to :contact
@@ -12,13 +60,13 @@ class Reservation < ApplicationRecord
   after_initialize :set_status, if: :new_record?
   after_save :create_sheduler
 
-  enum status: %i[created_by_user created_by_admin created_by_system appoved execute done cancel_by_user cancel_by_admin cancel_by_system]
+  # enum status: %i[created_by_user created_by_admin created_by_system appoved execute done cancel_by_user cancel_by_admin cancel_by_system]
 
   scope :intersection_range, lambda { |reserv_range, id, sauna_id|
     where('reserv_range && tstzrange(:start, :end)', start: reserv_range.begin, end: reserv_range.end)
       .where(sauna_id: sauna_id)
       .where.not(id: id)
-      .where(status: %i[created_by_user created_by_admin created_by_system appoved execute done])
+      .where(aasm_state: %i[created_by_user created_by_admin created_by_system appoved executing done])
   }
 
   # def intersection_range
@@ -69,11 +117,16 @@ class Reservation < ApplicationRecord
   private
 
   def set_status
-    self.status ||= if user.admin?
-                      :created_by_admin
-                    else
-                      :created_by_user
-                    end
+    self.aasm_state ||= if user.admin?
+                          :created_by_admin
+                        else
+                          :created_by_user
+                        end
+    # if user.admin?
+    #   create_by_admin!
+    # else
+    #   create_by_user!
+    # end
   end
 
   def start_less_end
@@ -98,9 +151,6 @@ class Reservation < ApplicationRecord
   end
 
   def create_sheduler
-    if (created_by_admin? || created_by_user?) && (saved_change_to_reserv_range? || new_record?)
-      puts 'Sheduled'
-      ReservationAutoStartWorker.perform_at(reserv_range.first, id)
-    end
+    ReservationAutoStartWorker.perform_at(reserv_range.first, id)
   end
 end
