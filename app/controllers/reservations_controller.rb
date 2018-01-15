@@ -6,7 +6,7 @@ class ReservationsController < ApplicationController
     collection = ReservationPolicy::Scopee.new(AppUser.current_user, @model).resolve
     # collection = collection.select(:id, :reserv_range) if AppUser.current_user.nil? || AppUser.current_user.role != :admin
 
-    render json: Oj.dump(collection)
+    render json: Oj.dump(collection: collection)
   end
 
   def create

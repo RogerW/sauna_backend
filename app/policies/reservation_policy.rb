@@ -7,12 +7,13 @@ class ReservationPolicy < ApplicationPolicy
     end
 
     def resolve
-      if user && user.role == 'admin'
+      if user && user.admin?
         # puts user
         # puts UsersSauna.where(user_id: user.id)
         UsersSauna.where(user_id: user.id).first.sauna.reservations # ToDo: Надо это убрать как-нибудь
       else
-        scope.select(:id, :reserv_range)
+        user.reservations
+        # scope.select(:id, :reserv_range)
       end
     end
   end
