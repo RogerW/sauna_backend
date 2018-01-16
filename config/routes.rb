@@ -10,6 +10,8 @@ Rails.application.routes.draw do
 
   resources :bookings, only: %i[index show create]
 
+  get '/addresses/search', to: 'addresses#search'
+
   resources :saunas do
     namespace :booking do
       resources :add_orders, only: %i[create]
