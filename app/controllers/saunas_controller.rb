@@ -14,13 +14,12 @@ class SaunasController < ApplicationController
   end
 
   def create
-    street = Sauna.find_by_sql(['SELECT fstf_AddressObjects_SearchByName(?, NULL, ?) as addr', params[:sauna][:street], params[:sauna][:city]]).first
 
-    full_address = Sauna.find_by_sql(['select fsfn_AddressObjects_TreeActualName(?) as full_address', street.addr.match(/([\d\w\-]+)/)[0]]).first
+    full_address = Sauna.find_by_sql(['select fsfn_AddressObjects_TreeActualName(?) as full_address', params[:sauna][:street_uuid]]).first.full_address
+    # street = Addrobj.where(aoguid: params[:sauna][:street_uuid]).first.formalname
 
     @resource = @model.new(resource_params
-      .merge(street_uuid: street['addr'].match(/([\d\w\-]+)/)[0])
-      .merge(full_address: full_address['full_address']))
+      .merge(full_address: full_address + ', д ' + params[:sauna][:house]))
 
     authorize @resource
 
@@ -46,13 +45,11 @@ class SaunasController < ApplicationController
   def update
     authorize @resource, :update?
 
-    street = Sauna.find_by_sql(['SELECT fstf_AddressObjects_SearchByName(?, NULL, ?) as addr', params[:sauna][:street], params[:sauna][:city]]).first
-
-    full_address = Sauna.find_by_sql(['select fsfn_AddressObjects_TreeActualName(?) as full_address', street.addr.match(/([\d\w\-]+)/)[0]]).first
+    full_address = Sauna.find_by_sql(['select fsfn_AddressObjects_TreeActualName(?) as full_address', params[:sauna][:street_uuid]]).first.full_address
+    # street = Addrobj.where(aoguid: params[:sauna][:street_uuid]).first.formalname
 
     @resource.assign_attributes(resource_params)
-    @resource.street_uuid = street['addr'].match(/([\d\w\-]+)/)[0]
-    @resource.full_address = full_address['full_address'] + ', д ' + params[:sauna][:house]
+    @resource.full_address = full_address + ', д ' + params[:sauna][:house]
 
     if params[:sauna][:logotype] != '' && params[:sauna][:logotype][:value]
       image_file                   = Paperclip.io_adapters.for("data:#{params[:sauna][:logotype][:filetype]};base64,#{params[:sauna][:logotype][:value]}")
@@ -90,7 +87,7 @@ class SaunasController < ApplicationController
   # Only allow a trusted parameter "white list" through.
   def resource_params
     params.require(:sauna).permit(
-      :name, :house, :lat, :lon, :notes
+      :name, :house, :lat, :lon, :notes, :street_uuid
     )
   end
 end
