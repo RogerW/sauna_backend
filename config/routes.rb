@@ -3,7 +3,7 @@ Rails.application.routes.draw do
   resources :invoices
   resources :contacts
   resources :user_orders, only: %i[index show]
-  
+
   resources :reservations
 
   resources :users_contacts, only: %i[show create]
@@ -29,10 +29,12 @@ Rails.application.routes.draw do
     confirmations: 'auth/confirmations'
   }
 
-  resources :sauna_lists, only: %i[ index show ] do
+  get 'users/sign_in', 'auth/sessions#new'
+
+  resources :sauna_lists, only: %i[index show] do
     get :can_book, on: :member
     get :get_price, on: :member
-    resources :reservations, only: %i[ index show create update ] do
+    resources :reservations, only: %i[index show create update] do
     end
   end
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html

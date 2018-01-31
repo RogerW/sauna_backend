@@ -4,7 +4,7 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable,
          :confirmable
-
+         
   validates :email, email: true
 
   after_initialize :set_default_role, if: :new_record?
