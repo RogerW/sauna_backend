@@ -27,10 +27,7 @@ gem 'sidekiq', '~> 5.0.5'
 gem 'bcrypt'
 gem 'devise', '~> 4.4.0'
 gem 'jwt'
-# gem 'omniauth'
-# gem 'omniauth-facebook'
-# gem 'omniauth-google-oauth2'
-# gem 'omniauth-vkontakte'
+gem 'oauth2'
 
 # for db views
 gem 'scenic'

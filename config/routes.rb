@@ -29,7 +29,11 @@ Rails.application.routes.draw do
     confirmations: 'auth/confirmations'
   }
 
-  get 'users/sign_in', 'auth/sessions#new'
+  devise_scope :users do
+    get 'users/sign_in' => 'auth/sessions#new'
+  end
+
+  get 'users/vkontakte' => 'auth/oauth#vkontakte'
 
   resources :sauna_lists, only: %i[index show] do
     get :can_book, on: :member
@@ -37,5 +41,6 @@ Rails.application.routes.draw do
     resources :reservations, only: %i[index show create update] do
     end
   end
+  
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 end
