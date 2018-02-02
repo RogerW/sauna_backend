@@ -1,6 +1,6 @@
 app/models/user.rb cfe3664560759da6fa30f4ca85427f6ab75aa962
 lib/render_data.rb 076952c08086325b2f212e11c190f3a42a47c9f8
-app/models/sauna.rb 1485da643c26ad57d7e02e701e1c3337c31be248
+app/models/sauna.rb cab441a88128615c5d40976ccd6dae40ed6fcaa6
 app/models/addrobj.rb de0900812fbdcc1f33d4303c3e13061e98824ea8
 app/models/billing.rb 11363fb536b704542de2d1060d5c24041de7d372
 app/models/booking.rb a66df48c02b38e2e6c9300da6f7022ff8f81d580
@@ -31,7 +31,7 @@ app/controllers/bookings_controller.rb a4c6769416b37aaf42c4182ac6bf986e4a557ec1
 app/controllers/contacts_controller.rb e1c4de2d731e985505823a7ec89862daa1dff86f
 app/controllers/invoices_controller.rb 849a2f7b5abe193207c0a8992ae132911e2fa6ca
 app/controllers/addresses_controller.rb b811c2fe31967ab083b786da80fc6f6943be7ba7
-app/controllers/auth/oauth_controller.rb 30d733cec846a4cb2075752bbb201cb133524728
+app/controllers/auth/oauth_controller.rb 68ba066b3cba0c0226bcf51d749ca699613eeb7e
 app/policies/booking/add_order_policy.rb 0f7461dd27a68f715ca2f066db36ed8e6a06760b
 app/channels/application_cable/channel.rb 54156ee2853cfdea4e3147cdb260776b8d90b646
 app/controllers/application_controller.rb beb849d3d2dcb1ad0b13b32d1abc25c2324f059d

@@ -12,13 +12,13 @@ class Auth::OauthController < ApplicationController
 
     # puts token.params['email']
 
-    email = token.params['email']
+    email = token.params['email'].downcase
     user_id = token.params['user_id']
 
-    puts "token #{token.methods}"
-    puts token.token
-
     user = User.where(email: email, uid: user_id, provider: 'vkontakte')
+
+    puts user
+    puts user.any?
 
     if user.any?
       render_sign_in user.first
@@ -36,10 +36,13 @@ class Auth::OauthController < ApplicationController
         v: '5.71'
       }
 
-      result = token.get('/method/users.get', params: params).parsed['response']
+      result = Oj.load(
+        @http.get(
+          '/method/users.get',
+          params.merge(access_token: token.token)
+        ).body
+      )['response']
 
-      puts "result #{result}"
-      # puts "parsered #{result.status}"
       raise result unless result.is_a?(Array) && result.first
 
       result = result.first
@@ -88,6 +91,8 @@ class Auth::OauthController < ApplicationController
       'PTEqoleimmTQvANSO1dF',
       deep_symbolize(vk_client_options)
     )
+
+    @http = Faraday.new(url: 'https://api.vk.com/')
   end
 
   def deep_symbolize(options)

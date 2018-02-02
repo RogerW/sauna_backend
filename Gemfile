@@ -26,6 +26,7 @@ gem 'sidekiq', '~> 5.0.5'
 
 gem 'bcrypt'
 gem 'devise', '~> 4.4.0'
+gem 'faraday'
 gem 'jwt'
 gem 'oauth2'
 
