@@ -11,6 +11,7 @@ Rails.application.routes.draw do
   resources :bookings, only: %i[index show create]
 
   get '/addresses/search', to: 'addresses#search'
+  get '/addresses/full_address', to: 'addresses#full_address'
 
   resources :saunas do
     namespace :booking do
@@ -41,6 +42,6 @@ Rails.application.routes.draw do
     resources :reservations, only: %i[index show create update] do
     end
   end
-  
+
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 end

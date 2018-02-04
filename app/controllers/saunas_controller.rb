@@ -25,7 +25,7 @@ class SaunasController < ApplicationController
 
     # @resource = @model.new resource_params
 
-    if params[:sauna][:logotype][:value]
+    if params[:sauna][:logotype] != '' && params[:sauna][:logotype][:value]
       image_file                   = Paperclip.io_adapters.for("data:#{params[:sauna][:logotype][:filetype]};base64,#{params[:sauna][:logotype][:value]}")
       image_file.original_filename = params[:sauna][:logotype][:filename]
       image_file.content_type      = params[:sauna][:logotype][:filetype]

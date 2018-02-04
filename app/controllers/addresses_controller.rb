@@ -9,4 +9,12 @@ class AddressesController < ApplicationController
       collection: streets
     )
   end
+
+  def full_address
+    street = Sauna.find_by_sql(['SELECT fsfn_addressobjects_treeactualname(?) as addr', params[:street_uuid]])
+
+    render json: Oj.dump(
+      collection: street
+    )
+  end
 end
