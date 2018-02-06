@@ -52,7 +52,7 @@ gem 'aasm'
 
 group :development do
   gem 'capistrano'
-  gem 'capistrano-passenger'
+  # gem 'capistrano-passenger'
   gem 'capistrano-rails'
   gem 'capistrano-rvm'
   # gem 'swagger-blocks'
@@ -63,9 +63,15 @@ gem 'rack-cors'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
-  gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
+  gem 'byebug', platforms: %i[mri mingw x64_mingw]
+  # gem 'cucumber-api'
+  # gem 'cucumber-rails', :require => false
   gem 'rspec-rails'
   gem 'rswag'
+end
+
+group :test do
+  gem 'database_cleaner'
 end
 
 group :development do

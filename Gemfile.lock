@@ -58,8 +58,6 @@ GEM
     capistrano-bundler (1.3.0)
       capistrano (~> 3.1)
       sshkit (~> 1.2)
-    capistrano-passenger (0.2.0)
-      capistrano (~> 3.0)
     capistrano-rails (1.3.1)
       capistrano (~> 3.1)
       capistrano-bundler (~> 1.1)
@@ -71,6 +69,7 @@ GEM
       climate_control (>= 0.0.3, < 1.0)
     concurrent-ruby (1.0.5)
     connection_pool (2.2.1)
+    database_cleaner (1.6.2)
     devise (4.4.0)
       bcrypt (~> 3.0)
       orm_adapter (~> 0.1)
@@ -257,9 +256,9 @@ DEPENDENCIES
   bcrypt
   byebug
   capistrano
-  capistrano-passenger
   capistrano-rails
   capistrano-rvm
+  database_cleaner
   devise (~> 4.4.0)
   email_validator
   faraday

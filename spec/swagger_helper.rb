@@ -20,7 +20,7 @@ RSpec.configure do |config|
         version: 'v1'
       },
       basePath: '/api/v1',
-      paths: {'/api/v1'}
-    }
+      paths: { }
+    } 
   }
 end

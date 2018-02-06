@@ -79,29 +79,31 @@ class Reservation < ApplicationRecord
   # end
 
   def get_cost
-    time_range = []
-    if reserv_range.end.day - reserv_range.begin.day > 1
-      time_range.append(
-        (reserv_range.begin.hour * 60 + reserv_range.begin.min) / 60.0...24.0
+    time_range = {}
+    if reserv_range.end.day - reserv_range.begin.day == 1
+      puts '2 days'
+      time_range[reserv_range.begin.wday] = (
+        ((reserv_range.begin.hour * 60 + reserv_range.begin.min) / 60.0)...24.0
       )
 
-      time_range.append(0.0...(reserv_range.end.hour * 60 + reserv_range.end.min) / 60.0)
-    # self.invoices
+      time_range[reserv_range.end.wday] = (0.0...(reserv_range.end.hour * 60 + reserv_range.end.min) / 60.0)
+      puts time_range
     else
-      time_range.append((reserv_range.begin.hour * 60 + reserv_range.begin.min) / 60.0...(reserv_range.end.hour * 60 + reserv_range.end.min) / 60.0)
+      time_range[reserv_range.end.wday] = (((reserv_range.begin.hour * 60 + reserv_range.begin.min) / 60.0)...(reserv_range.end.hour * 60 + reserv_range.end.min) / 60.0)
     end
 
     cost_sum = 0
 
-    time_range.each do |tr|
+    time_range.each do |wday, tr|
       billings = Billing
                  .select(
                    "numrange(start_time, end_time) * numrange(#{tr.begin},#{tr.end}) as period, cost_cents, cost_currency"
                  )
                  .where(
-                   'numrange(start_time, end_time) && numrange(:start, :end)',
+                   'numrange(start_time, end_time) && numrange(:start, :end) AND day_type = :day_type',
                    start: tr.begin,
-                   end: tr.end
+                   end: tr.end,
+                   day_type: wday
                  )
 
       # puts  billings.to_sql
