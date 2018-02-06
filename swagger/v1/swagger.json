@@ -1,0 +1,84 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "API V1",
+    "version": "v1"
+  },
+  "paths": {
+    "/saunas": {
+      "post": {
+        "summary": "Создание сауны",
+        "tags": [
+          "Saunas"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "sauna",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "house": {
+                  "type": "string"
+                },
+                "lat": {
+                  "type": "number"
+                },
+                "lon": {
+                  "type": "number"
+                },
+                "notes": {
+                  "type": "string"
+                },
+                "street_uuid": {
+                  "type": "uuid"
+                },
+                "logotype": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "string"
+                    },
+                    "filename": {
+                      "type": "string"
+                    },
+                    "filetype": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "required": [
+                "name",
+                "house",
+                "street_uuid"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Сауна успешно создана",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "msg": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "msg"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

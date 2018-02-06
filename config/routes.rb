@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  if Rails.env.development? or Rails.env.test?
+    mount Rswag::Api::Engine => '/api-docs'
+  end
   resources :sauna_descriptions
   resources :invoices
   resources :contacts
@@ -9,6 +12,8 @@ Rails.application.routes.draw do
   resources :users_contacts, only: %i[show create]
 
   resources :bookings, only: %i[index show create]
+
+  # resources :apidocs, only: [:index]
 
   get '/addresses/search', to: 'addresses#search'
   get '/addresses/full_address', to: 'addresses#full_address'
