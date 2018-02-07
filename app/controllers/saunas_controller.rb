@@ -13,6 +13,15 @@ class SaunasController < ApplicationController
     )
   end
 
+  def show
+    render json: Oj.dump(
+      collection: @resource.as_json.merge(logotype_image: @resource.logotype.url(:large),
+                                          logotype_medium: @resource.logotype.url(:medium),
+                                          logotype_thumb: @resource.logotype.url(:thumb)),
+      single: true
+    )
+  end
+
   def create
 
     full_address = Sauna.find_by_sql(['select fsfn_AddressObjects_TreeActualName(?) as full_address', params[:sauna][:street_uuid]]).first.full_address
