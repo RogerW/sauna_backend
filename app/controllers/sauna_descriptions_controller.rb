@@ -14,14 +14,23 @@ class SaunaDescriptionsController < ApplicationController
   private
 
   def set_model
-    if params[:id]
-      @model = Sauna.find(params[:id]).sauna_description
-    else
-      @model = Sauna.find(params[:sauna_id]).sauna_description
-    end
+    @model = if params[:id]
+               SaunaDescription
+             else
+               Sauna.find(params[:sauna_id]).sauna_description
+             end
   end
 
   def resource_params
-    params.require(:sauna_description).permit(:sauna_id, :description, :services)
+    tags = {}
+
+    params[:sauna_description].try(:fetch, :services, {}).keys.each do |k|
+      tags[k] = []
+      params[:sauna_description][:services][k].keys.each do |nk|
+        tags[k].push nk
+      end
+    end
+
+    params.require(:sauna_description).permit(:sauna_id, :description, services: tags)
   end
 end
