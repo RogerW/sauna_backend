@@ -8,7 +8,7 @@ app/models/contact.rb 66d5497c49eb742635935fcee8a48c345c797b55
 app/models/invoice.rb 64633316377abdf746c7a546969083add5ada238
 app/models/sauna_list.rb 9402e80c97eb57c4510e5543d58bfcff88083067
 app/models/user_order.rb c314b934005e506c0671e2ae252d362691427c0a
-app/models/reservation.rb 591623e1baf87eb13a0f8ba28995d3328bf32d14
+app/models/reservation.rb c5990dd7f976dabc37397fe7d9890fe5f47d9249
 app/models/users_sauna.rb d3bbea90a73881d723e21196ecf21ab93f54ea02
 app/jobs/application_job.rb 9a24c3e30cfb517943d8774df4695ba794bfd69d
 app/models/sauna_gallery.rb 9b5b83b94948d823ed61709e3340dd3ae02da1cf
