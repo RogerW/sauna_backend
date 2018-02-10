@@ -17,6 +17,7 @@ Rails.application.routes.draw do
 
   get '/addresses/search', to: 'addresses#search'
   get '/addresses/full_address', to: 'addresses#full_address'
+  get '/addresses/search_city', to: 'addresses#search_city'
 
   resources :saunas do
     namespace :booking do
