@@ -10,12 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180129063916) do
+ActiveRecord::Schema.define(version: 20180212083550) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "adminpack"
   enable_extension "pg_trgm"
+  enable_extension "adminpack"
 
   create_table "addrobj", primary_key: "aoguid", id: :uuid, default: nil, force: :cascade do |t|
     t.string "areacode", limit: 3
@@ -117,7 +117,6 @@ ActiveRecord::Schema.define(version: 20180129063916) do
   end
 
   create_table "reservations", force: :cascade do |t|
-    t.tstzrange "reserv_range"
     t.integer "state"
     t.bigint "sauna_id"
     t.bigint "user_id", null: false
@@ -127,6 +126,7 @@ ActiveRecord::Schema.define(version: 20180129063916) do
     t.datetime "updated_at", null: false
     t.integer "status", default: 0
     t.string "aasm_state"
+    t.tsrange "reserv_range"
     t.index ["contact_id"], name: "index_reservations_on_contact_id"
     t.index ["sauna_id"], name: "index_reservations_on_sauna_id"
   end
@@ -227,27 +227,6 @@ ActiveRecord::Schema.define(version: 20180129063916) do
   add_foreign_key "users_contacts", "contacts"
   add_foreign_key "users_saunas", "saunas"
 
-  create_view "bookings",  sql_definition: <<-SQL
-      SELECT reservations.id,
-      lower(reservations.reserv_range) AS start_date_time,
-      upper(reservations.reserv_range) AS end_date_time,
-      reservations.guests_num,
-      reservations.status,
-      contacts.id AS contact_id,
-      contacts.first_name,
-      contacts.middle_name,
-      contacts.last_name,
-      contacts.phone,
-      contacts.created_at,
-      contacts.updated_at,
-      users_saunas.user_id,
-      saunas.id AS sauna_id
-     FROM (((reservations
-       LEFT JOIN saunas ON ((saunas.id = reservations.sauna_id)))
-       LEFT JOIN users_saunas ON ((users_saunas.sauna_id = saunas.id)))
-       LEFT JOIN contacts ON ((reservations.contact_id = contacts.id)));
-  SQL
-
   create_view "sauna_lists",  sql_definition: <<-SQL
       SELECT saunas.id,
       max(billings.cost_cents) AS max_cost_cents,
@@ -273,8 +252,8 @@ ActiveRecord::Schema.define(version: 20180129063916) do
       reservations.id AS reservation_id,
       reservations.user_id,
       reservations.aasm_state AS state,
-      lower(reservations.reserv_range) AS start_date_time,
-      upper(reservations.reserv_range) AS end_date_time,
+      to_char(lower(reservations.reserv_range), 'YYYY-MM-DD HH24:MI:ss'::text) AS start_date_time,
+      to_char(upper(reservations.reserv_range), 'YYYY-MM-DD HH24:MI:ss'::text) AS end_date_time,
       reservations.guests_num,
       saunas.id AS sauna_id,
       saunas.name,
@@ -282,6 +261,27 @@ ActiveRecord::Schema.define(version: 20180129063916) do
      FROM ((reservations
        LEFT JOIN saunas ON ((saunas.id = reservations.sauna_id)))
        LEFT JOIN users_saunas ON ((users_saunas.sauna_id = saunas.id)));
+  SQL
+
+  create_view "bookings",  sql_definition: <<-SQL
+      SELECT reservations.id,
+      to_char(lower(reservations.reserv_range), 'YYYY-MM-DD HH24:MI:ss'::text) AS start_date_time,
+      to_char(upper(reservations.reserv_range), 'YYYY-MM-DD HH24:MI:ss'::text) AS end_date_time,
+      reservations.guests_num,
+      reservations.status,
+      contacts.id AS contact_id,
+      contacts.first_name,
+      contacts.middle_name,
+      contacts.last_name,
+      contacts.phone,
+      contacts.created_at,
+      contacts.updated_at,
+      users_saunas.user_id,
+      saunas.id AS sauna_id
+     FROM (((reservations
+       LEFT JOIN saunas ON ((saunas.id = reservations.sauna_id)))
+       LEFT JOIN users_saunas ON ((users_saunas.sauna_id = saunas.id)))
+       LEFT JOIN contacts ON ((reservations.contact_id = contacts.id)));
   SQL
 
 end

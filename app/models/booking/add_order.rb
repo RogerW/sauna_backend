@@ -50,8 +50,8 @@ class Booking::AddOrder < ActiveType::Object
   end
 
   def create_reservation
-    puts start_date_time
-    # start_datetime = DateTime.strptime(params[:booking][:start_date_time].gsub(/\s+/,'+'), '%Y-%m-%dT%H:%M:%S%z')
+    # puts start_date_time
+    # start_datetime = DateTime.strptime(params[:booking][:start_date_time].gsub(/\s+/,'+'), '%Y-%m-%dT%H:%M:%S')
     end_date_time = start_date_time + duration.hours
 
     Reservation.create(reserv_range: start_date_time...end_date_time,

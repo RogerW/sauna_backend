@@ -74,7 +74,7 @@ class ReservationsController < ApplicationController
   end
 
   def resource_params
-    start_date_time = Time.strptime(params[:reservation][:start_date_time].gsub(/\s+/, '+'), '%Y-%m-%dT%H:%M:%S%z')
+    start_date_time = Time.strptime(params[:reservation][:start_date_time].gsub(/\s+/, '+'), '%Y-%m-%dT%H:%M:%S')
     end_date_time = start_date_time + params[:reservation][:duration].to_i.hours
 
     params.require(:reservation)

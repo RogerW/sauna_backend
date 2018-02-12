@@ -4,10 +4,11 @@ class SaunasController < ApplicationController
   skip_before_action :authenticate_user!, only: %i[index show]
 
   def get_contacts
-    @collection = @sauna.contacts.all
-
+    @sauna = Sauna.find(params[:id])
     authorize @sauna, :get_contacts?
 
+    @collection = @sauna.contacts.all
+    
     render json: Oj.dump(
       collection: @collection
     )

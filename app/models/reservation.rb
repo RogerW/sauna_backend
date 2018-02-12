@@ -63,7 +63,7 @@ class Reservation < ApplicationRecord
   # enum status: %i[created_by_user created_by_admin created_by_system appoved execute done cancel_by_user cancel_by_admin cancel_by_system]
 
   scope :intersection_range, lambda { |reserv_range, id, sauna_id|
-    where('reserv_range && tstzrange(:start, :end)', start: reserv_range.begin, end: reserv_range.end)
+    where('reserv_range && tsrange(:start, :end)', start: reserv_range.begin, end: reserv_range.end)
       .where(sauna_id: sauna_id)
       .where.not(id: id)
       .where(aasm_state: %i[created_by_user created_by_admin created_by_system appoved executing done])
