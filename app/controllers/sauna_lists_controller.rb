@@ -89,7 +89,7 @@ class SaunaListsController < ApplicationController
   end
 
   def reservations_params
-    start_datetime = DateTime.strptime(params[:reservation][:start_date_time], '%Y-%m-%dT%H:%M:%S%z')
+    start_datetime = DateTime.strptime(params[:reservation][:start_date_time], '%Y-%m-%dT%H:%M:%S')
     end_datetime = start_datetime + params[:reservation][:duration].to_i.hours
 
     params.require(:reservation)
