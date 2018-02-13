@@ -57,7 +57,7 @@ class SaunaListsController < ApplicationController
 
         sauna_ids = Reservation.select(:sauna_id)
                                .where(
-                                 'reserv_range && tstzrange(:start, :end)',
+                                 'reserv_range && tsrange(:start, :end)',
                                  start: start_date,
                                  end: end_time
                                )
