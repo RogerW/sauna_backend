@@ -45,14 +45,27 @@ class SaunaListsController < ApplicationController
     @model = SaunaList
 
     if action_name.include? 'index'
-      @model = @model.where(sauna_table[:min_cost_cents].lteq(params[:max_cost])) if params[:max_cost].present?
-      @model = @model.where(sauna_table[:max_cost_cents].gteq(params[:min_cost])) if params[:min_cost].present?
+      if params[:max_cost].present?
+        @model = @model.where(sauna_table[:min_cost_cents]
+          .lteq(params[:max_cost]
+          .to_s.to_i * 100))
+      end
+
+      if params[:min_cost].present?
+        @model = @model.where(sauna_table[:max_cost_cents]
+          .gteq(params[:min_cost]
+          .to_s.to_i * 100))
+      end
 
       if params[:only_free].present?
         reserv_table = Arel::Table.new(:reservations)
 
-        start_date = Time.current || params[:start_date]
-        duration = 2 || params[:duration]
+        start_date = Time.strptime("#{params[:start_date]}T#{params[:start_time]}", '%Y-%m-%dT%H:%M') || Time.current
+
+        puts Time.strptime("#{params[:start_date]}T#{params[:start_time]}", '%Y-%m-%dT%H:%M')
+        puts start_date
+
+        duration = params[:duration].to_s.to_i || 2
         end_time = start_date + duration.hours
 
         sauna_ids = Reservation.select(:sauna_id)
@@ -68,12 +81,12 @@ class SaunaListsController < ApplicationController
       end
 
       if params[:only_own].present?
-        if AppUser.current_user.nil?
-          sauna_ids = []
-        else
-          # sauna_ids = UsersSauna.where(user_id: user.id).all.pluck(:sauna_id)
-          sauna_ids = AppUser.current_user.saunas.all.pluck(:sauna_id)
-        end
+        sauna_ids = if AppUser.current_user.nil?
+                      []
+                    else
+                      # sauna_ids = UsersSauna.where(user_id: user.id).all.pluck(:sauna_id)
+                      AppUser.current_user.saunas.all.pluck(:sauna_id)
+                    end
         puts sauna_ids
         @model = @model.where(sauna_table[:id].in(sauna_ids))
       end
@@ -89,7 +102,7 @@ class SaunaListsController < ApplicationController
   end
 
   def reservations_params
-    start_datetime = DateTime.strptime(params[:reservation][:start_date_time], '%Y-%m-%dT%H:%M:%S')
+    start_datetime = Time.strptime(params[:reservation][:start_date_time], '%Y-%m-%dT%H:%M:%S')
     end_datetime = start_datetime + params[:reservation][:duration].to_i.hours
 
     params.require(:reservation)
