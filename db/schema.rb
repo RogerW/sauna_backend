@@ -10,12 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180212083550) do
+ActiveRecord::Schema.define(version: 20180301055722) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "adminpack"
   enable_extension "pg_trgm"
+  enable_extension "adminpack"
 
   create_table "addrobj", primary_key: "aoguid", id: :uuid, default: nil, force: :cascade do |t|
     t.string "areacode", limit: 3
@@ -227,26 +227,6 @@ ActiveRecord::Schema.define(version: 20180212083550) do
   add_foreign_key "users_contacts", "contacts"
   add_foreign_key "users_saunas", "saunas"
 
-  create_view "sauna_lists",  sql_definition: <<-SQL
-      SELECT saunas.id,
-      max(billings.cost_cents) AS max_cost_cents,
-      min(billings.cost_cents) AS min_cost_cents,
-      saunas.name,
-      saunas.logotype_file_name,
-      saunas.logotype_content_type,
-      saunas.logotype_file_size,
-      saunas.logotype_updated_at,
-      saunas.rating,
-      saunas.full_address,
-      saunas.city_uuid,
-      saunas.street_uuid,
-      saunas.note
-     FROM (billings
-       JOIN saunas ON ((saunas.id = billings.sauna_id)))
-    GROUP BY saunas.id
-    ORDER BY saunas.name;
-  SQL
-
   create_view "user_orders",  sql_definition: <<-SQL
       SELECT reservations.id,
       reservations.id AS reservation_id,
@@ -282,6 +262,28 @@ ActiveRecord::Schema.define(version: 20180212083550) do
        LEFT JOIN saunas ON ((saunas.id = reservations.sauna_id)))
        LEFT JOIN users_saunas ON ((users_saunas.sauna_id = saunas.id)))
        LEFT JOIN contacts ON ((reservations.contact_id = contacts.id)));
+  SQL
+
+  create_view "sauna_lists",  sql_definition: <<-SQL
+      SELECT saunas.id,
+      max(billings.cost_cents) AS max_cost_cents,
+      min(billings.cost_cents) AS min_cost_cents,
+      saunas.name,
+      saunas.logotype_file_name,
+      saunas.logotype_content_type,
+      saunas.logotype_file_size,
+      saunas.logotype_updated_at,
+      saunas.rating,
+      saunas.full_address,
+      saunas.city_uuid,
+      saunas.street_uuid,
+      saunas.note,
+      saunas.lon,
+      saunas.lat
+     FROM (billings
+       JOIN saunas ON ((saunas.id = billings.sauna_id)))
+    GROUP BY saunas.id
+    ORDER BY saunas.name;
   SQL
 
 end

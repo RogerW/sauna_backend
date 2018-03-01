@@ -12,6 +12,6 @@ class Booking::AddOrdersController < ApplicationController
           .permit(:duration, :full_name, :phone)
           .merge(user_id: AppUser.current_user.id)
           .merge(sauna_id: params[:sauna_id])
-          .merge(start_date_time: Time.strptime(params[:booking_add_order][:start_date_time].gsub(/\s+/, '+'), '%Y-%m-%dT%H:%M:%S'))
+          .merge(start_date_time: Time.strptime(params[:booking_add_order][:start_date_time].gsub(/\s+/, '+'), '%Y-%m-%dT%H:%M'))
   end
 end
