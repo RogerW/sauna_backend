@@ -13,6 +13,7 @@ class BillingPolicy < ApplicationPolicy
     @user = user
     @sauna = sauna
   end
+  
 
   def create?
     UsersSauna.where(user_id: user.id).exists?

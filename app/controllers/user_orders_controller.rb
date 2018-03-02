@@ -22,6 +22,27 @@ class UserOrdersController < ApplicationController
     )
   end
 
+  def show
+    collection = @model.where(id: params[:id]).all
+    collection_json = collection.as_json
+
+    result = []
+
+    collection.each_with_index do |e, i|
+      sauna = e.sauna
+      invoices_ids = InvoicesReservation.where(reservation_id: e.id).pluck(:invoice_id)
+      invoices = Invoice.where(id: invoices_ids).all
+      result.push collection_json[i].merge(logotype_image: sauna.logotype.url(:large),
+                                           logotype_medium: sauna.logotype.url(:medium),
+                                           logotype_thumb: sauna.logotype.url(:thumb),
+                                           invoices: invoices)
+    end
+
+    render json: Oj.dump(
+      collection: result[0]
+    )
+  end
+
   private 
 
   def set_model

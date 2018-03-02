@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180301055722) do
+ActiveRecord::Schema.define(version: 20180302102649) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -227,22 +227,6 @@ ActiveRecord::Schema.define(version: 20180301055722) do
   add_foreign_key "users_contacts", "contacts"
   add_foreign_key "users_saunas", "saunas"
 
-  create_view "user_orders",  sql_definition: <<-SQL
-      SELECT reservations.id,
-      reservations.id AS reservation_id,
-      reservations.user_id,
-      reservations.aasm_state AS state,
-      to_char(lower(reservations.reserv_range), 'YYYY-MM-DD HH24:MI:ss'::text) AS start_date_time,
-      to_char(upper(reservations.reserv_range), 'YYYY-MM-DD HH24:MI:ss'::text) AS end_date_time,
-      reservations.guests_num,
-      saunas.id AS sauna_id,
-      saunas.name,
-      saunas.full_address
-     FROM ((reservations
-       LEFT JOIN saunas ON ((saunas.id = reservations.sauna_id)))
-       LEFT JOIN users_saunas ON ((users_saunas.sauna_id = saunas.id)));
-  SQL
-
   create_view "bookings",  sql_definition: <<-SQL
       SELECT reservations.id,
       to_char(lower(reservations.reserv_range), 'YYYY-MM-DD HH24:MI:ss'::text) AS start_date_time,
@@ -284,6 +268,24 @@ ActiveRecord::Schema.define(version: 20180301055722) do
        JOIN saunas ON ((saunas.id = billings.sauna_id)))
     GROUP BY saunas.id
     ORDER BY saunas.name;
+  SQL
+
+  create_view "user_orders",  sql_definition: <<-SQL
+      SELECT reservations.id,
+      reservations.id AS reservation_id,
+      reservations.user_id,
+      reservations.aasm_state AS state,
+      to_char(lower(reservations.reserv_range), 'YYYY-MM-DD HH24:MI:ss'::text) AS start_date_time,
+      to_char(upper(reservations.reserv_range), 'YYYY-MM-DD HH24:MI:ss'::text) AS end_date_time,
+      reservations.guests_num,
+      saunas.id AS sauna_id,
+      saunas.name,
+      saunas.full_address,
+      saunas.lat,
+      saunas.lon
+     FROM ((reservations
+       LEFT JOIN saunas ON ((saunas.id = reservations.sauna_id)))
+       LEFT JOIN users_saunas ON ((users_saunas.sauna_id = saunas.id)));
   SQL
 
 end
