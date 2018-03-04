@@ -19,6 +19,8 @@ Rails.application.routes.draw do
   get '/addresses/full_address', to: 'addresses#full_address'
   get '/addresses/search_city', to: 'addresses#search_city'
 
+  get 'sitemap', to: 'sitemap#index'
+
   resources :saunas do
     namespace :booking do
       resources :add_orders, only: %i[create]

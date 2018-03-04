@@ -14,8 +14,8 @@ ActiveRecord::Schema.define(version: 20180302102649) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "pg_trgm"
   enable_extension "adminpack"
+  enable_extension "pg_trgm"
 
   create_table "addrobj", primary_key: "aoguid", id: :uuid, default: nil, force: :cascade do |t|
     t.string "areacode", limit: 3

@@ -71,7 +71,11 @@ class Auth::SessionsController < Devise::SessionsController
   end
 
   def destroy
-    Devise.sign_out_all_scopes ? sign_out : sign_out(resource_name)
+    # Devise.sign_out_all_scopes ? sign_out : sign_out(resource_name)
+
+    render json: {
+      msg: 'Вы вышли из системы.', status: 200
+    }
   end
 
   private
