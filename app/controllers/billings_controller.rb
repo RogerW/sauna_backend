@@ -1,5 +1,6 @@
 class BillingsController < ApplicationController
   include Spa
+  skip_before_action :authenticate_user!, only: %i[index show]
 
   private
 
