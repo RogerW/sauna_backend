@@ -11,9 +11,13 @@ class ReservationPolicy < ApplicationPolicy
         # puts user
         # puts UsersSauna.where(user_id: user.id)
         UsersSauna.where(user_id: user.id).first.sauna.reservations # ToDo: Надо это убрать как-нибудь
-      else
+      elsif user
         user.reservations
-        # scope.select(:id, :reserv_range)
+      else
+        scope.select(
+          "to_char(lower(reservations.reserv_range), 'YYYY-MM-DD HH24:MI:ss'::text) AS start_date_time",
+          "to_char(upper(reservations.reserv_range), 'YYYY-MM-DD HH24:MI:ss'::text) AS end_date_time"
+        )
       end
     end
   end
