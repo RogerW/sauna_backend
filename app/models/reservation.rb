@@ -58,7 +58,7 @@ class Reservation < ApplicationRecord
   after_create :create_invoices
 
   after_initialize :set_status, if: :new_record?
-  after_save :create_sheduler
+  after_save :create_sheduler 
 
   # enum status: %i[created_by_user created_by_admin created_by_system appoved execute done cancel_by_user cancel_by_admin cancel_by_system]
 

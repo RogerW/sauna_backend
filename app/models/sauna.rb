@@ -1,13 +1,22 @@
 class Sauna < ApplicationRecord
   has_attached_file :logotype,
                     styles: {
-                      large:  '1200x900#',
-                      medium: '400x300#',
+                      large: {
+                        geometry: '1200x900#',
+                        processors: [:watermark],
+                        watermark_path: "#{Rails.root}/public/logo_main.png"
+                      },
+                      medium: {
+                        geometry: '400x300#',
+                        processors: [:watermark],
+                        watermark_path: "#{Rails.root}/public/logo_main_medium.png"
+                      },
                       thumb: ['40x30#', :webp]
                     },
                     default_url: '/assets/:style/missing.png'
   validates_attachment_content_type :logotype, content_type: /\Aimage\/.*\z/
 
+  has_many :promos
   has_many :reservations
   has_many :billings
   has_many :sauna_galleries

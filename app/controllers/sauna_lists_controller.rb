@@ -62,8 +62,8 @@ class SaunaListsController < ApplicationController
 
         start_date = Time.strptime("#{params[:start_date]}T#{params[:start_time]}", '%Y-%m-%dT%H:%M') || Time.current
 
-        puts Time.strptime("#{params[:start_date]}T#{params[:start_time]}", '%Y-%m-%dT%H:%M')
-        puts start_date
+        # puts Time.strptime("#{params[:start_date]}T#{params[:start_time]}", '%Y-%m-%dT%H:%M')
+        # puts start_date
 
         duration = params[:duration].to_s.to_i || 2
         end_time = start_date + duration.hours

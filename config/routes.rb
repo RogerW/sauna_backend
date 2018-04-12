@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  
   if Rails.env.development? or Rails.env.test?
     mount Rswag::Api::Engine => '/api-docs'
   end
@@ -6,6 +7,8 @@ Rails.application.routes.draw do
   resources :invoices
   resources :contacts
   resources :user_orders, only: %i[index show]
+
+  resources :promos
 
   resources :reservations
 
@@ -28,6 +31,7 @@ Rails.application.routes.draw do
     resources :sauna_descriptions, only: %i[index create update]
     resources :billings
     resources :sauna_galleries
+    resources :promos
     get :get_contacts, on: :member
   end
 
@@ -47,8 +51,7 @@ Rails.application.routes.draw do
   resources :sauna_lists, only: %i[index show] do
     get :can_book, on: :member
     get :get_price, on: :member
-    resources :reservations, only: %i[index show create update] do
-    end
+    resources :reservations, only: %i[index show create update]
   end
 
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180302102649) do
+ActiveRecord::Schema.define(version: 20180409065814) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -113,6 +113,23 @@ ActiveRecord::Schema.define(version: 20180302102649) do
     t.bigint "reservation_id"
     t.index ["invoice_id"], name: "index_invoices_reservations_on_invoice_id"
     t.index ["reservation_id"], name: "index_invoices_reservations_on_reservation_id"
+  end
+
+  create_table "promos", force: :cascade do |t|
+    t.string "title"
+    t.tsrange "active_range"
+    t.bigint "sauna_id"
+    t.bigint "user_id"
+    t.integer "status"
+    t.string "desc"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "image_file_name"
+    t.string "image_content_type"
+    t.integer "image_file_size"
+    t.datetime "image_updated_at"
+    t.index ["sauna_id"], name: "index_promos_on_sauna_id"
+    t.index ["user_id"], name: "index_promos_on_user_id"
   end
 
   create_table "reservations", force: :cascade do |t|
@@ -219,6 +236,8 @@ ActiveRecord::Schema.define(version: 20180302102649) do
   add_foreign_key "invoices", "saunas"
   add_foreign_key "invoices_reservations", "invoices"
   add_foreign_key "invoices_reservations", "reservations"
+  add_foreign_key "promos", "saunas"
+  add_foreign_key "promos", "users"
   add_foreign_key "reservations", "contacts"
   add_foreign_key "reservations", "saunas"
   add_foreign_key "sauna_descriptions", "saunas"
