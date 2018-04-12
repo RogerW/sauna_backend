@@ -9,7 +9,7 @@ class Promo < ApplicationRecord
                       thumb: ['40x30#', :webp]
                     },
                     default_url: '/assets/:style/missing.png'
-  validates_attachment_content_type :photo, content_type: /\Aimage\/.*\z/
+  validates_attachment_content_type :image, content_type: /\Aimage\/.*\z/
 
   validates_presence_of :user_id, :sauna_id, :title, :desc, :active_range
 

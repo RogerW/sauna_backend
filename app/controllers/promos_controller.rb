@@ -4,8 +4,8 @@ class PromosController < ApplicationController
 
   def index
     collection = @model
-                 .where(':now <@ promos.active_range AND', now: Time.now)
-                 .where('promos.status == 1')
+                 .where("localtimestamp <@ promos.active_range")
+                 .where('promos.status = 1')
 
     collection_json = collection.as_json
 
