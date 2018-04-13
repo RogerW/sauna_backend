@@ -1,4 +1,4 @@
-class SaunaPolicy < ApplicationPolicy
+class PromoPolicy < ApplicationPolicy
   class Scopee < Scope
     attr_reader :user, :scope
 
@@ -9,9 +9,9 @@ class SaunaPolicy < ApplicationPolicy
     def resolve; end
   end
 
-  def initialize(user, sauna)
+  def initialize(user, promo)
     @user = user
-    @sauna = sauna
+    @promo = promo
   end
 
   def create?

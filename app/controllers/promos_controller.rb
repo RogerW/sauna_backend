@@ -2,21 +2,40 @@ class PromosController < ApplicationController
   include Spa
   skip_before_action :authenticate_user!, only: %i[index show]
 
+  before_action :set_resource, only: %i[show edit update destroy change_status]
+
   def index
     collection = @model
-                 .where("localtimestamp <@ promos.active_range")
-                 .where('promos.status = 1')
+                 .select('lower(promos.active_range) as start_time, upper(promos.active_range) as end_time, promos.desc, promos.id, promos.title, promos.status')
+                 .where('localtimestamp <@ promos.active_range')
+
+    unless AppUser.current_user.admin?
+      collection = collection.where('promos.status = 1')
+    end
 
     collection_json = collection.as_json
 
     result = []
     collection.each_with_index do |e, i|
-      result.push collection_json[i].merge(image_medium: e.image.url(:medium),
-                                           image_thumb: e.image.url(:thumb))
+      promo = Promo.find e.id
+      result.push collection_json[i].merge(image_main: promo.image.url(:main),
+                                           image_thumb: promo.image.url(:thumb))
     end
 
     render json: Oj.dump(
       collection: result
+    )
+  end
+
+  def show
+    render json: Oj.dump(
+      collection: @resource.as_json
+        .merge(image_main: @resource.image.url(:main),
+               image_thumb: @resource.image.url(:thumb),
+               start_time: @resource.active_range.begin,
+               end_time: @resource.active_range.end)
+        .without('active_range'),
+      single: true
     )
   end
 
@@ -34,7 +53,7 @@ class PromosController < ApplicationController
     if @resource.save
       @collection = @model.where(id: @resource.id)
 
-      render json: { msg: 'Фото добавлено!' }
+      render json: { msg: 'Акция добавлена!' }
     else
       render json: { errors: @resource.errors, msg: @resource.errors.full_messages.join(', ') }, status: 422
     end
@@ -49,6 +68,24 @@ class PromosController < ApplicationController
       image_file.content_type      = params[:promo][:image][:filetype]
       @resource.image              = image_file
     end
+
+    if @resource.save
+      render json: Oj.dump(
+        collection: @resource,
+        single: true,
+        msg: "#{@model.name} успешно обновлен"
+      )
+    else
+      render json: { errors: @resource.errors, msg: @resource.errors.full_messages.join(', ') }, status: 422
+    end
+  end
+
+  def change_status
+    @resource.status = if @resource.status == 1
+                         0
+                       else
+                         1
+                       end
 
     if @resource.save
       render json: Oj.dump(
@@ -78,6 +115,9 @@ class PromosController < ApplicationController
 
   # Only allow a trusted parameter "white list" through.
   def resource_params
+    start_time = Time.strptime(params[:promo][:start_time].gsub(/\s+/, '+'), '%Y-%m-%dT%H:%M:%S')
+    end_time = Time.strptime(params[:promo][:end_time].gsub(/\s+/, '+'), '%Y-%m-%dT%H:%M:%S')
+
     params.require(:promo).permit(:title, :sauna_id, :status, :desc)
           .merge(active_range: start_time...end_time)
           .merge(user_id: AppUser.current_user.id)

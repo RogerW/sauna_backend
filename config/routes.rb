@@ -8,7 +8,9 @@ Rails.application.routes.draw do
   resources :contacts
   resources :user_orders, only: %i[index show]
 
-  resources :promos
+  resources :promos do
+    get :change_status, on: :member
+  end
 
   resources :reservations
 

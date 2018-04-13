@@ -13,6 +13,12 @@ class Promo < ApplicationRecord
 
   validates_presence_of :user_id, :sauna_id, :title, :desc, :active_range
 
+  after_initialize :set_default_state, if: :new_record?
+
   belongs_to :sauna
-  belongs_to :user_create
+  belongs_to :user
+
+  def set_default_state
+    self.status ||= 0
+  end
 end
