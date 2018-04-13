@@ -14,5 +14,9 @@
 !/log/.keep
 !/tmp/.keep
 /doc/*
+!/public/logo_main_medium.png
+!/public/logo_main.png
+!/public/map_pin.png
+!/public/shadow.png
 
 .byebug_history
