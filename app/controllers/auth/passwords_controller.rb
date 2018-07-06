@@ -1,7 +1,8 @@
 class Auth::PasswordsController < Devise::PasswordsController
   prepend_before_action :require_no_authentication
+  skip_before_action :authenticate_user!
   # Render the #edit only if coming from a reset password email link
-  append_before_action :assert_reset_token_passed, only: :edit
+  # append_before_action :assert_reset_token_passed, only: :edit
 
   # POST /resource/password
   def create
@@ -9,8 +10,7 @@ class Auth::PasswordsController < Devise::PasswordsController
 
     if successfully_sent?(resource)
       render json: {
-        msg: 'Вам были отправлены инструкции по восстановлению пароля',
-        redirect_to_url: root_path
+        msg: 'Вам были отправлены инструкции по восстановлению пароля'
       }
     else
       render json: {
@@ -21,11 +21,7 @@ class Auth::PasswordsController < Devise::PasswordsController
   end
 
   # GET /resource/password/edit?reset_password_token=abcdef
-  def edit
-    self.resource = resource_class.new
-    set_minimum_password_length
-    resource.reset_password_token = params[:reset_password_token]
-  end
+  def edit; end
 
   # PUT /resource/password
   def update
@@ -37,7 +33,6 @@ class Auth::PasswordsController < Devise::PasswordsController
         sign_in(resource_name, resource)
         render json: {
           msg: resource.active_for_authentication? ? :updated : :updated_not_active,
-          redirect_to_url: after_resetting_password_path_for(resource)
         }
       else
         render json: {

@@ -4,7 +4,7 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable,
          :confirmable
-         
+
   validates :email, email: true
 
   after_initialize :set_default_role, if: :new_record?
@@ -23,7 +23,7 @@ class User < ApplicationRecord
   end
 
   def only_if_unconfirmed
-    pending_any_confirmation {yield}
+    pending_any_confirmation { yield }
   end
 
   private
@@ -31,5 +31,4 @@ class User < ApplicationRecord
   def set_default_role
     self.role ||= :user
   end
-
 end

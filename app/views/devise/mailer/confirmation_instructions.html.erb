@@ -1,0 +1,10 @@
+<p>Здравствуйте,
+  <%= @email %>!</p>
+
+<p>Добро пожаловать в систему online-бронирования
+  <a href="https://cityprice.club">CityPrice.Club</a>.</p>
+
+<p>
+  Для продолжения работы просим
+  <%= link_to 'подтвердить email', confirmation_url(@resource, confirmation_token: @token) %>
+</p>
