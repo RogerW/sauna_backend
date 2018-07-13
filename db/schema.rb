@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180409065814) do
+ActiveRecord::Schema.define(version: 20180712123431) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -140,7 +140,6 @@ ActiveRecord::Schema.define(version: 20180409065814) do
     t.integer "guests_num"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "status", default: 0
     t.string "aasm_state"
     t.tsrange "reserv_range"
     t.index ["contact_id"], name: "index_reservations_on_contact_id"
@@ -245,27 +244,6 @@ ActiveRecord::Schema.define(version: 20180409065814) do
   add_foreign_key "users_contacts", "contacts"
   add_foreign_key "users_saunas", "saunas"
 
-  create_view "bookings",  sql_definition: <<-SQL
-      SELECT reservations.id,
-      to_char(lower(reservations.reserv_range), 'YYYY-MM-DD HH24:MI:ss'::text) AS start_date_time,
-      to_char(upper(reservations.reserv_range), 'YYYY-MM-DD HH24:MI:ss'::text) AS end_date_time,
-      reservations.guests_num,
-      reservations.status,
-      contacts.id AS contact_id,
-      contacts.first_name,
-      contacts.middle_name,
-      contacts.last_name,
-      contacts.phone,
-      contacts.created_at,
-      contacts.updated_at,
-      users_saunas.user_id,
-      saunas.id AS sauna_id
-     FROM (((reservations
-       LEFT JOIN saunas ON ((saunas.id = reservations.sauna_id)))
-       LEFT JOIN users_saunas ON ((users_saunas.sauna_id = saunas.id)))
-       LEFT JOIN contacts ON ((reservations.contact_id = contacts.id)));
-  SQL
-
   create_view "sauna_lists",  sql_definition: <<-SQL
       SELECT saunas.id,
       max(billings.cost_cents) AS max_cost_cents,
@@ -304,6 +282,27 @@ ActiveRecord::Schema.define(version: 20180409065814) do
      FROM ((reservations
        LEFT JOIN saunas ON ((saunas.id = reservations.sauna_id)))
        LEFT JOIN users_saunas ON ((users_saunas.sauna_id = saunas.id)));
+  SQL
+
+  create_view "bookings",  sql_definition: <<-SQL
+      SELECT reservations.id,
+      to_char(lower(reservations.reserv_range), 'YYYY-MM-DD HH24:MI:ss'::text) AS start_date_time,
+      to_char(upper(reservations.reserv_range), 'YYYY-MM-DD HH24:MI:ss'::text) AS end_date_time,
+      reservations.guests_num,
+      reservations.aasm_state AS status,
+      contacts.id AS contact_id,
+      contacts.first_name,
+      contacts.middle_name,
+      contacts.last_name,
+      contacts.phone,
+      contacts.created_at,
+      contacts.updated_at,
+      users_saunas.user_id,
+      saunas.id AS sauna_id
+     FROM (((reservations
+       LEFT JOIN saunas ON ((saunas.id = reservations.sauna_id)))
+       LEFT JOIN users_saunas ON ((users_saunas.sauna_id = saunas.id)))
+       LEFT JOIN contacts ON ((reservations.contact_id = contacts.id)));
   SQL
 
 end

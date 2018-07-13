@@ -3,7 +3,23 @@ class ReservationsController < ApplicationController
   skip_before_action :authenticate_user!, only: %i[index]
 
   def index
-    collection = ReservationPolicy::Scopee.new(AppUser.current_user, @model).resolve
+    collection =
+      ReservationPolicy::Scopee.new(AppUser.current_user, @model).resolve
+
+    if params[:from].present?
+      # puts params[:from]
+      from = Time.strptime(params[:from], '%Y-%m-%dT%H:%M:%S')
+
+      collection = collection
+                   .where('upper(reservations.reserv_range) >= ?::date', from)
+    end
+
+    if params[:to].present?
+      to = Time.strptime(params[:to], '%Y-%m-%dT%H:%M:%S')
+
+      collection = collection
+                   .where('lower(reservations.reserv_range) <= ?::date', to)
+    end
 
     render json: Oj.dump(collection: collection)
   end
@@ -29,7 +45,8 @@ class ReservationsController < ApplicationController
 
       render json: { msg: 'Сауна забронирована.' }
     else
-      render json: { errors: @resource.errors, msg: @resource.errors.full_messages.join(', ') }, status: 422
+      render json: { errors: @resource.errors,
+                     msg: @resource.errors.full_messages.join(', ') }, status: 422
     end
   end
 
@@ -73,7 +90,12 @@ class ReservationsController < ApplicationController
   end
 
   def resource_params
-    start_date_time = Time.strptime(params[:reservation][:start_date_time].gsub(/\s+/, '+'), '%Y-%m-%dT%H:%M:%S')
+    start_date_time = Time.strptime(params[:reservation][:start_date_time]
+                          .gsub(/\s+/, '+'), '%Y-%m-%dT%H:%M')
+    # round to semihour
+    start_date_time = Time
+                      .at((start_date_time.to_f / (30 * 60)).floor * 30 * 60)
+
     end_date_time = start_date_time + params[:reservation][:duration].to_i.hours
 
     params.require(:reservation)
