@@ -17,6 +17,7 @@ class User < ApplicationRecord
   has_many :invoices
   has_many :users_saunas
   has_and_belongs_to_many :saunas, join_table: 'users_saunas', foreign_key: 'user_id'
+  has_many :order_logs
 
   def public_fields
     attributes.slice('email', 'created_at', 'role')
