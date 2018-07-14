@@ -9,7 +9,7 @@ class PromosController < ApplicationController
                  .select('lower(promos.active_range) as start_time, upper(promos.active_range) as end_time, promos.desc, promos.id, promos.title, promos.status')
                  .where('localtimestamp <@ promos.active_range')
 
-    unless AppUser.current_user.admin?
+    unless AppUser.current_user && AppUser.current_user.admin?
       collection = collection.where('promos.status = 1')
     end
 

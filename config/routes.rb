@@ -1,8 +1,13 @@
+require 'sidekiq/web'
+
 Rails.application.routes.draw do
   
   if Rails.env.development? or Rails.env.test?
     mount Rswag::Api::Engine => '/api-docs'
   end
+
+  mount Sidekiq::Web => '/sidekiq'
+
   resources :sauna_descriptions
   resources :invoices
   resources :contacts

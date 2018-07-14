@@ -23,11 +23,19 @@ class Reservation < ApplicationRecord
     end
 
     event :approve do
-      transitions from: %i[created_by_user created_by_admin created_by_system], to: :approved
+      transitions(
+        from: %i[created_by_user created_by_admin created_by_system],
+        to: :approved,
+        after: :after_approve
+      )
     end
 
     event :execute do
-      transitions from: %i[created_by_admin created_by_system], to: :executing
+      transitions(
+        from: %i[created_by_admin created_by_system],
+        to: :executing,
+        after: :wait_for_complete
+      )
     end
 
     event :complete do
@@ -58,7 +66,7 @@ class Reservation < ApplicationRecord
   after_create :create_invoices
 
   after_initialize :set_status, if: :new_record?
-  after_save :create_sheduler 
+  after_save :create_sheduler
 
   # enum status: %i[created_by_user created_by_admin created_by_system appoved execute done cancel_by_user cancel_by_admin cancel_by_system]
 
@@ -66,7 +74,16 @@ class Reservation < ApplicationRecord
     where('reserv_range && tsrange(:start, :end)', start: reserv_range.begin, end: reserv_range.end)
       .where(sauna_id: sauna_id)
       .where.not(id: id)
-      .where(aasm_state: %i[created_by_user created_by_admin created_by_system appoved executing done])
+      .where(
+        aasm_state: %i[
+          created_by_user
+          created_by_admin
+          created_by_system
+          appoved
+          executing
+          done
+        ]
+      )
   }
 
   # def intersection_range
@@ -79,7 +96,7 @@ class Reservation < ApplicationRecord
   # end
 
   def get_cost
-    puts self.sauna_id
+    puts sauna_id
     time_range = {}
     if reserv_range.end.day - reserv_range.begin.day == 1
       time_range[reserv_range.begin.wday] = (
@@ -103,7 +120,7 @@ class Reservation < ApplicationRecord
                    start: tr.begin,
                    end: tr.end,
                    day_type: wday,
-                   sauna_id: self.sauna_id
+                   sauna_id: sauna_id
                  )
 
       # puts  billings.to_sql
@@ -124,11 +141,6 @@ class Reservation < ApplicationRecord
                         else
                           :created_by_user
                         end
-    # if user.admin?
-    #   create_by_admin!
-    # else
-    #   create_by_user!
-    # end
   end
 
   def start_less_end
@@ -147,12 +159,54 @@ class Reservation < ApplicationRecord
     if user.admin?
       invoices.create(sauna: sauna, user_id: user_id, inv_type: 1, state: 0, result_cents: cost_sum)
     else
-      invoices.create(sauna: sauna, user_id: user_id, inv_type: 0, state: 0, result_cents: cost_sum / 10)
-      invoices.create(sauna: sauna, user_id: user_id, inv_type: 1, state: 0, result_cents: cost_sum - cost_sum / 10)
+      invoices.create(
+        sauna: sauna,
+        user_id: user_id,
+        inv_type: 0,
+        state: 0,
+        result_cents: cost_sum / 10
+      )
+      invoices.create(
+        sauna: sauna,
+        user_id: user_id,
+        inv_type: 1,
+        state: 0,
+        result_cents: cost_sum - cost_sum / 10
+      )
     end
   end
 
+  def wait_for_pay
+    ReservationAutoStartWorker.perform_at(
+      ActiveSupport::TimeZone.new('Asia/Yekaterinburg')
+                             .local_to_utc(reserv_range.first), id
+                           )
+  end
+
+  def wait_for_start
+    ReservationAutoStartWorker.perform_at(
+      ActiveSupport::TimeZone.new('Asia/Yekaterinburg')
+                             .local_to_utc(reserv_range.first), id
+                           )
+  end
+
+  def after_approve
+    ReservationAutoStartWorker.perform_at(
+      ActiveSupport::TimeZone.new('Asia/Yekaterinburg')
+                             .local_to_utc(reserv_range.first), id
+                           )
+  end
+
+  def wait_for_complete
+    ReservationAutoDoneWorker.perform_at(
+      ActiveSupport::TimeZone.new('Asia/Yekaterinburg')
+                             .local_to_utc(reserv_range.last), id
+                           )
+  end
+
   def create_sheduler
-    ReservationAutoStartWorker.perform_at(reserv_range.first, id)
+    wait_for_pay if created_by_user?
+    wait_for_start if created_by_admin?
+    wait_for_start if created_by_system?
   end
 end
