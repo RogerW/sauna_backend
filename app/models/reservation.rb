@@ -14,6 +14,8 @@ class Reservation < ApplicationRecord
     state :canceled_by_admin
     state :canceled_by_system
 
+    after_all_transitions :log_status_change
+
     event :create_by_admin do
       transitions from: [:created_by_user], to: :created_by_admin
     end
@@ -32,7 +34,7 @@ class Reservation < ApplicationRecord
 
     event :execute do
       transitions(
-        from: %i[created_by_admin created_by_system],
+        from: %i[created_by_user created_by_admin created_by_system],
         to: :executing,
         after: :wait_for_complete
       )
@@ -62,6 +64,8 @@ class Reservation < ApplicationRecord
 
   validate :check_intersection_range
   validate :start_less_end
+
+  has_many :order_logs
 
   after_create :create_invoices
 
@@ -157,7 +161,13 @@ class Reservation < ApplicationRecord
     cost_sum = get_cost
 
     if user.admin?
-      invoices.create(sauna: sauna, user_id: user_id, inv_type: 1, state: 0, result_cents: cost_sum)
+      invoices.create(
+        sauna: sauna,
+        user_id: user_id,
+        inv_type: 1,
+        state: 0,
+        result_cents: cost_sum
+      )
     else
       invoices.create(
         sauna: sauna,
@@ -174,6 +184,15 @@ class Reservation < ApplicationRecord
         result_cents: cost_sum - cost_sum / 10
       )
     end
+  end
+
+  def log_status_change
+    order_logs.create(
+      user_id: user.id,
+      state_from: aasm.from_state,
+      state_to: aasm.to_state,
+      event: aasm.current_event
+    )
   end
 
   def wait_for_pay
@@ -198,7 +217,7 @@ class Reservation < ApplicationRecord
   end
 
   def wait_for_complete
-    ReservationAutoDoneWorker.perform_at(
+    ReservationAutoStartWorker.perform_at(
       ActiveSupport::TimeZone.new('Asia/Yekaterinburg')
                              .local_to_utc(reserv_range.last), id
                            )

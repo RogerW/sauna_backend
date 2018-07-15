@@ -10,10 +10,63 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180712123431) do
+ActiveRecord::Schema.define(version: 20180714081732) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "pg_trgm"
+
+  create_table "addrobj", primary_key: "aoguid", id: :uuid, default: nil, force: :cascade do |t|
+    t.string "areacode", limit: 3
+    t.string "autocode", limit: 1
+    t.string "citycode", limit: 3
+    t.string "code", limit: 17
+    t.date "enddate"
+    t.string "formalname", limit: 120
+    t.string "ifnsfl", limit: 4
+    t.string "ifnsul", limit: 4
+    t.string "offname", limit: 120
+    t.string "okato", limit: 11
+    t.string "oktmo", limit: 11
+    t.string "placecode", limit: 3
+    t.string "plaincode", limit: 15
+    t.string "postalcode", limit: 6
+    t.string "regioncode", limit: 2
+    t.string "shortname", limit: 10
+    t.date "startdate"
+    t.string "streetcode", limit: 4
+    t.string "terrifnsfl", limit: 4
+    t.string "terrifnsul", limit: 4
+    t.date "updatedate"
+    t.string "ctarcode", limit: 3
+    t.string "extrcode", limit: 4
+    t.string "sextcode", limit: 3
+    t.string "plancode", limit: 4
+    t.string "cadnum", limit: 100
+    t.decimal "divtype", precision: 1
+    t.integer "actstatus"
+    t.uuid "aoid"
+    t.integer "aolevel"
+    t.integer "centstatus"
+    t.integer "currstatus"
+    t.integer "livestatus"
+    t.uuid "nextid"
+    t.uuid "normdoc"
+    t.integer "operstatus"
+    t.uuid "parentguid"
+    t.uuid "previd"
+    t.index "formalname gin_trgm_ops", name: "formalname_trgm_idx", using: :gin
+    t.index "offname gin_trgm_ops", name: "offname_trgm_idx", using: :gin
+    t.index ["aoguid"], name: "aoguid_pk_idx", unique: true
+    t.index ["aoid"], name: "aoid_idx", unique: true
+    t.index ["aolevel"], name: "aolevel_idx"
+    t.index ["currstatus"], name: "currstatus_idx"
+    t.index ["formalname"], name: "formalname_idx"
+    t.index ["offname"], name: "offname_idx"
+    t.index ["parentguid"], name: "parentguid_idx"
+    t.index ["shortname", "aolevel"], name: "shortname_aolevel_idx"
+    t.index ["shortname"], name: "shortname_idx"
+  end
 
   create_table "billings", force: :cascade do |t|
     t.bigint "sauna_id"
@@ -62,6 +115,19 @@ ActiveRecord::Schema.define(version: 20180712123431) do
     t.index ["reservation_id"], name: "index_invoices_reservations_on_reservation_id"
   end
 
+  create_table "order_logs", force: :cascade do |t|
+    t.bigint "reservation_id"
+    t.bigint "user_id"
+    t.string "state_from"
+    t.string "state_to"
+    t.string "note"
+    t.string "event"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["reservation_id"], name: "index_order_logs_on_reservation_id"
+    t.index ["user_id"], name: "index_order_logs_on_user_id"
+  end
+
   create_table "promos", force: :cascade do |t|
     t.string "title"
     t.tsrange "active_range"
@@ -89,6 +155,7 @@ ActiveRecord::Schema.define(version: 20180712123431) do
     t.datetime "updated_at", null: false
     t.string "aasm_state"
     t.tsrange "reserv_range"
+    t.string "type"
     t.index ["contact_id"], name: "index_reservations_on_contact_id"
     t.index ["sauna_id"], name: "index_reservations_on_sauna_id"
   end
@@ -132,6 +199,14 @@ ActiveRecord::Schema.define(version: 20180712123431) do
     t.string "note"
   end
 
+  create_table "socrbase", primary_key: "kod_t_st", id: :string, limit: 4, force: :cascade do |t|
+    t.string "socrname", limit: 50
+    t.string "scname", limit: 10
+    t.integer "level"
+    t.index ["kod_t_st"], name: "kod_t_st_idx", unique: true
+    t.index ["scname", "level"], name: "scname_level_idx"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -169,10 +244,13 @@ ActiveRecord::Schema.define(version: 20180712123431) do
     t.index ["sauna_id"], name: "index_users_saunas_on_sauna_id"
   end
 
+  add_foreign_key "addrobj", "addrobj", column: "parentguid", primary_key: "aoguid", name: "addrobj_parentguid_fkey", on_update: :cascade
   add_foreign_key "billings", "saunas"
   add_foreign_key "invoices", "saunas"
   add_foreign_key "invoices_reservations", "invoices"
   add_foreign_key "invoices_reservations", "reservations"
+  add_foreign_key "order_logs", "reservations"
+  add_foreign_key "order_logs", "users"
   add_foreign_key "promos", "saunas"
   add_foreign_key "promos", "users"
   add_foreign_key "reservations", "contacts"

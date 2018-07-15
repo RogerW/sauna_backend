@@ -10,6 +10,12 @@ class ReservationAutoStartWorker
        Time.now
 
       reserv.execute!
+    elsif reserv.may_complete? &&
+          ActiveSupport::TimeZone.new('Asia/Yekaterinburg')
+                                 .local_to_utc(reserv.reserv_range.last) <=
+          Time.now
+
+      reserv.complete!
     end
 
     # reserv.complete! if reserv.may_complete?
