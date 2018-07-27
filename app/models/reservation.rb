@@ -69,6 +69,8 @@ class Reservation < ApplicationRecord
 
   after_create :create_invoices
 
+  after_save :recreate_invoices
+
   after_initialize :set_status, if: :new_record?
   after_save :create_sheduler
 
@@ -100,7 +102,6 @@ class Reservation < ApplicationRecord
   # end
 
   def get_cost
-    puts sauna_id
     time_range = {}
     if reserv_range.end.day - reserv_range.begin.day == 1
       time_range[reserv_range.begin.wday] = (
@@ -152,9 +153,33 @@ class Reservation < ApplicationRecord
   end
 
   def check_intersection_range
-    # puts self.class.where("reserv_range && tstzrange(:start, :end)", start: reserv_range.begin, end: reserv_range.end)
-    # puts "exist!!!! #{intersection_range.exists?}"
-    errors.add(:reserv_range, 'Время уже занято.') if self.class.intersection_range(reserv_range, id, sauna_id).exists?
+    errors.add(:reserv_range, 'Время уже занято.') if self
+                                                      .class
+                                                      .intersection_range(
+                                                        reserv_range, id,
+                                                        sauna_id
+                                                      )
+                                                      .exists?
+  end
+
+  def recreate_invoices
+    return unless reserv_range_changed?
+
+    cost_sum = get_cost
+
+    old_cost = invoices.where.not(
+      aasm_state: %w[canceled_by_user canceled_by_admin canceled_by_system]
+    ).invoices.sum(&:result_cents)
+
+    if cost_sum > old_cost
+      invoices.create(
+        sauna: sauna,
+        user_id: user_id,
+        inv_type: 1,
+        state: 0,
+        result_cents: cost_sum - old_cost
+      )
+    end
   end
 
   def create_invoices

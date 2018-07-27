@@ -9,15 +9,21 @@ Rails.application.routes.draw do
   mount Sidekiq::Web => '/sidekiq'
 
   resources :sauna_descriptions
-  resources :invoices
-  resources :contacts
+  
+  resources :invoices do
+    get :pay_in_cash, on: :member
+  end
+
+  # resources :contacts
   resources :user_orders, only: %i[index show]
 
   resources :promos do
     get :change_status, on: :member
   end
 
-  resources :reservations
+  resources :reservations do
+    resources :invoices, only: %i[index]
+  end
 
   resources :users_contacts, only: %i[show create]
 
@@ -40,6 +46,7 @@ Rails.application.routes.draw do
     resources :sauna_galleries
     resources :promos
     get :get_contacts, on: :member
+    resources :contacts
   end
 
   devise_for :users, controllers: {

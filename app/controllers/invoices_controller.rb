@@ -1,51 +1,29 @@
 class InvoicesController < ApplicationController
-  before_action :set_invoice, only: [:show, :update, :destroy]
+  include Spa
+  before_action :set_resource, only: %i[show update destroy pay_in_cash]
 
-  # GET /invoices
   def index
-    @invoices = Invoice.all
+    collection =
+      InvoicePolicy::Scopee.new(AppUser.current_user, @model).resolve
 
-    render json: @invoices
+    render json: Oj.dump(collection: collection)
   end
 
-  # GET /invoices/1
-  def show
-    render json: @invoice
-  end
+  def pay_in_cash
+    authorize @resource, :pay_in_cash?
 
-  # POST /invoices
-  def create
-    @invoice = Invoice.new(invoice_params)
+    @resource.cashing!
 
-    if @invoice.save
-      render json: @invoice, status: :created, location: @invoice
-    else
-      render json: @invoice.errors, status: :unprocessable_entity
-    end
-  end
-
-  # PATCH/PUT /invoices/1
-  def update
-    if @invoice.update(invoice_params)
-      render json: @invoice
-    else
-      render json: @invoice.errors, status: :unprocessable_entity
-    end
-  end
-
-  # DELETE /invoices/1
-  def destroy
-    @invoice.destroy
+    render json: Oj.dump(collection: @resource)
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_invoice
-      @invoice = Invoice.find(params[:id])
-    end
 
-    # Only allow a trusted parameter "white list" through.
-    def invoice_params
-      params.require(:invoice).permit(:sauna_id, :user_id, :type, :state, :amount, :discount, :result)
-    end
+  def set_model
+    @model = if params[:reservation_id].present?
+               Reservation.find(params[:reservation_id]).invoices
+             else
+               Invoice
+             end
+  end
 end

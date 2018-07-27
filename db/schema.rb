@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180714081732) do
+ActiveRecord::Schema.define(version: 20180727065643) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -90,6 +90,7 @@ ActiveRecord::Schema.define(version: 20180714081732) do
     t.bigint "contactable_id"
     t.string "middle_name"
     t.index ["contactable_type", "contactable_id"], name: "index_contacts_on_contactable_type_and_contactable_id"
+    t.index ["phone", "contactable_type", "contactable_id"], name: "index_contacts_on_phone_and_contactable_type_and_contactable_id", unique: true
   end
 
   create_table "invoices", force: :cascade do |t|

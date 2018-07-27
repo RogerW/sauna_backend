@@ -28,7 +28,14 @@ class SaunaListsController < ApplicationController
   end
 
   def get_price
-    render json: Oj.dump(price: reservation.get_cost.to_i)
+    render json: Oj.dump(
+      price: reservation.get_cost.to_i,
+      can_book: Reservation.intersection_range(
+        reservations_params[:reserv_range],
+        0,
+        params[:id]
+      ).empty?
+    )
   end
 
   def get_list_by_admin
@@ -74,7 +81,11 @@ class SaunaListsController < ApplicationController
                                  start: start_date,
                                  end: end_time
                                )
-                               .where(reserv_table[:status].lteq(6))
+                               .where(
+                                 reserv_table[:aasm_state].not_in(
+                                   %w[canceled_by_user canceled_by_admin canceled_by_system]
+                                 )
+                               )
                                .pluck(:sauna_id)
 
         @model = @model.where(sauna_table[:id].not_in(sauna_ids))
@@ -102,7 +113,7 @@ class SaunaListsController < ApplicationController
   end
 
   def reservations_params
-    puts "|#{params[:reservation][:start_date_time]}|"
+    # puts "|#{params[:reservation][:start_date_time]}|"
     start_datetime = Time.strptime(params[:reservation][:start_date_time], '%FT%R:%S')
     end_datetime = start_datetime + params[:reservation][:duration].to_i.hours
 

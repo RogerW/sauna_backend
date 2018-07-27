@@ -1,51 +1,41 @@
 class ContactsController < ApplicationController
-  before_action :set_contact, only: [:show, :update, :destroy]
+  include Spa
+
+  # before_action :set_resource, only: %i[show update destroy]
 
   # GET /contacts
   def index
-    @contacts = Contact.all
+    authorize @model, :index?
 
-    render json: @contacts
+    # @collection = @model.all
+
+    render json: Oj.dump(
+      collection: @model.all
+    )
   end
 
-  # GET /contacts/1
   def show
-    render json: @contact
-  end
-
-  # POST /contacts
-  def create
-    @contact = Contact.new(contact_params)
-
-    if @contact.save
-      render json: @contact, status: :created, location: @contact
-    else
-      render json: @contact.errors, status: :unprocessable_entity
-    end
-  end
-
-  # PATCH/PUT /contacts/1
-  def update
-    if @contact.update(contact_params)
-      render json: @contact
-    else
-      render json: @contact.errors, status: :unprocessable_entity
-    end
-  end
-
-  # DELETE /contacts/1
-  def destroy
-    @contact.destroy
+    # @resource = @model.take(params[:id])
+    authorize @model, :show?
+    render json: Oj.dump(
+      collection: @resource,
+      single: true
+    )
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_contact
-      @contact = Contact.find(params[:id])
-    end
 
-    # Only allow a trusted parameter "white list" through.
-    def contact_params
-      params.require(:contact).permit(:first_name, :middle_mane, :last_name, :phone, :user_id)
-    end
+  def set_model
+    @model = if params[:sauna_id].present?
+               Sauna.find(params[:sauna_id]).contacts
+             else
+               Contact
+             end
+  end
+
+  def resource_params
+    params.require(:contacts)
+          .permit(:last_name, :first_name, :middle_name, :phone)
+  end
+
 end

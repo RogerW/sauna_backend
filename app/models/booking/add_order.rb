@@ -36,7 +36,12 @@ class Booking::AddOrder < ActiveType::Object
   def create_contacts
     if User.find(user_id).saunas.find(sauna_id)
       last_name, first_name, middle_name = full_name.split(/\s+/)
-      @contact = Contact.find_or_create_by(
+
+      last_name ||= ''
+      first_name ||= ''
+      middle_name ||= ''
+
+      @contact = Sauna.find(sauna_id).contacts.find_or_create_by(
         first_name: first_name,
         last_name: last_name,
         middle_name: middle_name,
@@ -44,18 +49,24 @@ class Booking::AddOrder < ActiveType::Object
       )
     else
       @contact = user.contact
+      unless Sauna.find(sauna_id).contacts.exists?(id: @contact.id)
+        Sauna.find(sauna_id).contacts << @contact
+      end
     end
 
-    Sauna.find(sauna_id).contacts << @contact unless Sauna.find(sauna_id).contacts.exists?(id: @contact.id)
+    # Sauna.find(sauna_id).contacts << @contact unless Sauna.find(sauna_id).contacts.exists?(id: @contact.id)
   end
 
   def create_reservation
     # puts start_date_time
-    # start_datetime = DateTime.strptime(params[:booking][:start_date_time].gsub(/\s+/,'+'), '%Y-%m-%dT%H:%M:%S')
+    # start_date_time = DateTime.strptime(
+    #   params[:booking][:start_date_time].gsub(/\s+/, '+'), '%Y-%m-%dT%H:%M:%S'
+    # )
     end_date_time = start_date_time + duration.hours
 
     Reservation.create(reserv_range: start_date_time...end_date_time,
-                              user_id: user_id, guests_num: guest_num,
-                              sauna_id: sauna_id, contact_id: @contact.id)
+                       user_id: user_id, guests_num: guest_num,
+                       sauna_id: sauna_id, contact_id: @contact.id,
+                       aasm_state: 'created_by_admin')
   end
 end

@@ -2,10 +2,17 @@ class UsersContactsController < ApplicationController
   def show
     allow_columns = %w[last_name first_name middle_name phone]
 
-    render json: Oj.dump(
-      collection: AppUser.current_user.contact.as_json.delete_if { |k, _v| !allow_columns.include? k },
-      single: true
-    )
+    if AppUser.current_user.contact.nil?
+      render json: Oj.dump(
+        collection: {},
+        single: true
+      )
+    else
+      render json: Oj.dump(
+        collection: AppUser.current_user.contact.as_json.delete_if { |k, _v| !allow_columns.include? k },
+        single: true
+      )
+    end
   end
 
   def create
