@@ -69,7 +69,7 @@ class Reservation < ApplicationRecord
 
   after_create :create_invoices
 
-  after_save :recreate_invoices
+  before_save :recreate_invoices, if: :persisted?
 
   after_initialize :set_status, if: :new_record?
   after_save :create_sheduler
@@ -163,13 +163,18 @@ class Reservation < ApplicationRecord
   end
 
   def recreate_invoices
-    return unless reserv_range_changed?
+    # puts "has_changes_to_save? #{has_changes_to_save?}"
+    return unless has_changes_to_save?
 
     cost_sum = get_cost
 
+    # puts "cost_sum: #{cost_sum}"
+
     old_cost = invoices.where.not(
       aasm_state: %w[canceled_by_user canceled_by_admin canceled_by_system]
-    ).invoices.sum(&:result_cents)
+    ).sum(&:result_cents)
+
+    # puts "old_cost: #{old_cost}"
 
     if cost_sum > old_cost
       invoices.create(
