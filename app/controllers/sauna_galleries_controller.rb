@@ -10,8 +10,13 @@ class SaunaGalleriesController < ApplicationController
     result = []
     collection.each_with_index do |e, i|
       result.push collection_json[i].merge(photo_image: e.photo.url(:large),
+                                           photo_image_webp: e.photo.url(:large_webp),
+                                           photo_image_md: e.photo.url(:large_md),
+                                           photo_image_md_webp: e.photo.url(:large__md_webp),
                                            photo_medium: e.photo.url(:medium),
-                                           photo_thumb: e.photo.url(:thumb))
+                                           photo_medium_webp: e.photo.url(:medium_webp),
+                                           photo_thumb: e.photo.url(:thumb),
+                                           photo_thumb_webp: e.photo.url(:thumb_webp))
     end
 
     render json: Oj.dump(

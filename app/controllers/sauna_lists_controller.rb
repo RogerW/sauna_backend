@@ -14,12 +14,34 @@ class SaunaListsController < ApplicationController
     collection.each_with_index do |e, i|
       sauna = Sauna.find e.id
       result.push collection_json[i].merge(logotype_image: sauna.logotype.url(:large),
+                                           logotype_image_webp: sauna.logotype.url(:large_webp),
+                                           logotype_image_md: sauna.logotype.url(:large_md),
+                                           logotype_image_md_webp: sauna.logotype.url(:large__md_webp),
                                            logotype_medium: sauna.logotype.url(:medium),
-                                           logotype_thumb: sauna.logotype.url(:thumb))
+                                           logotype_medium_webp: sauna.logotype.url(:medium_webp),
+                                           logotype_thumb: sauna.logotype.url(:thumb),
+                                           logotype_thumb_webp: sauna.logotype.url(:thumb_webp))
     end
 
     render json: Oj.dump(
       collection: result
+    )
+  end
+
+  def show
+    # @resource = @model.take(params[:id])
+    sauna = Sauna.find @resource.id
+    render json: Oj.dump(
+      collection: @resource
+        .as_json.merge(logotype_image: sauna.logotype.url(:large),
+                       logotype_image_webp: sauna.logotype.url(:large_webp),
+                       logotype_image_md: sauna.logotype.url(:large_md),
+                       logotype_image__md_webp: sauna.logotype.url(:large__md_webp),
+                       logotype_medium: sauna.logotype.url(:medium),
+                       logotype_medium_webp: sauna.logotype.url(:medium_webp),
+                       logotype_thumb: sauna.logotype.url(:thumb),
+                       logotype_thumb_webp: sauna.logotype.url(:thumb_webp)),
+      single: true
     )
   end
 
