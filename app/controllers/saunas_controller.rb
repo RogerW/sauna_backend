@@ -97,7 +97,7 @@ class SaunasController < ApplicationController
   # Only allow a trusted parameter "white list" through.
   def resource_params
     params.require(:sauna).permit(
-      :name, :house, :lat, :lon, :notes, :street_uuid
+      :name, :house, :lat, :lon, :notes, :street_uuid, :description
     )
   end
 end

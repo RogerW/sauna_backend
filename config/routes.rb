@@ -37,6 +37,8 @@ Rails.application.routes.draw do
 
   get 'sitemap', to: 'sitemap#index'
 
+  resources :shop_templates, only: %i[index]
+
   resources :saunas do
     namespace :booking do
       resources :add_orders, only: %i[create]

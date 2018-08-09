@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180727065643) do
+ActiveRecord::Schema.define(version: 20180808124655) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -163,10 +163,11 @@ ActiveRecord::Schema.define(version: 20180727065643) do
 
   create_table "sauna_descriptions", force: :cascade do |t|
     t.bigint "sauna_id"
-    t.string "description"
     t.jsonb "services"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "description"
+    t.jsonb "details"
     t.index ["sauna_id"], name: "index_sauna_descriptions_on_sauna_id"
   end
 
@@ -198,6 +199,12 @@ ActiveRecord::Schema.define(version: 20180727065643) do
     t.decimal "lat", precision: 9, scale: 6
     t.decimal "lon", precision: 9, scale: 6
     t.string "note"
+    t.string "description"
+  end
+
+  create_table "shop_templates", force: :cascade do |t|
+    t.string "type_tmpl"
+    t.json "template"
   end
 
   create_table "socrbase", primary_key: "kod_t_st", id: :string, limit: 4, force: :cascade do |t|
@@ -261,28 +268,6 @@ ActiveRecord::Schema.define(version: 20180727065643) do
   add_foreign_key "users_contacts", "contacts"
   add_foreign_key "users_saunas", "saunas"
 
-  create_view "sauna_lists",  sql_definition: <<-SQL
-      SELECT saunas.id,
-      max(billings.cost_cents) AS max_cost_cents,
-      min(billings.cost_cents) AS min_cost_cents,
-      saunas.name,
-      saunas.logotype_file_name,
-      saunas.logotype_content_type,
-      saunas.logotype_file_size,
-      saunas.logotype_updated_at,
-      saunas.rating,
-      saunas.full_address,
-      saunas.city_uuid,
-      saunas.street_uuid,
-      saunas.note,
-      saunas.lon,
-      saunas.lat
-     FROM (billings
-       JOIN saunas ON ((saunas.id = billings.sauna_id)))
-    GROUP BY saunas.id
-    ORDER BY saunas.name;
-  SQL
-
   create_view "user_orders",  sql_definition: <<-SQL
       SELECT reservations.id,
       reservations.id AS reservation_id,
@@ -320,6 +305,29 @@ ActiveRecord::Schema.define(version: 20180727065643) do
        LEFT JOIN saunas ON ((saunas.id = reservations.sauna_id)))
        LEFT JOIN users_saunas ON ((users_saunas.sauna_id = saunas.id)))
        LEFT JOIN contacts ON ((reservations.contact_id = contacts.id)));
+  SQL
+
+  create_view "sauna_lists",  sql_definition: <<-SQL
+      SELECT saunas.id,
+      max(billings.cost_cents) AS max_cost_cents,
+      min(billings.cost_cents) AS min_cost_cents,
+      saunas.name,
+      saunas.logotype_file_name,
+      saunas.logotype_content_type,
+      saunas.logotype_file_size,
+      saunas.logotype_updated_at,
+      saunas.rating,
+      saunas.full_address,
+      saunas.city_uuid,
+      saunas.street_uuid,
+      saunas.note,
+      saunas.description,
+      saunas.lon,
+      saunas.lat
+     FROM (billings
+       JOIN saunas ON ((saunas.id = billings.sauna_id)))
+    GROUP BY saunas.id
+    ORDER BY saunas.name;
   SQL
 
 end
