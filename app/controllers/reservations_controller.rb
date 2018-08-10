@@ -29,13 +29,18 @@ class ReservationsController < ApplicationController
 
     sauna = Sauna.find(params[:sauna_list_id])
     contact = AppUser.current_user.contact
-    sauna_contact = sauna.contacts
-                         .find_or_create_by(
-                           first_name: contact.first_name,
-                           last_name: contact.last_name,
-                           middle_name: contact.middle_name,
-                           phone: contact.phone
-                         )
+
+    sauna_contact = sauna.contacts.find_by phone: contact.phone
+
+    unless sauna.contacts.where(phone: contact.phone).exists?
+      sauna_contact = sauna.contacts
+                           .create(
+                             first_name: contact.first_name,
+                             last_name: contact.last_name,
+                             middle_name: contact.middle_name,
+                             phone: contact.phone
+                           )
+    end
 
     @resource = @model.new(resource_params.merge(contact_id: sauna_contact.id))
 
