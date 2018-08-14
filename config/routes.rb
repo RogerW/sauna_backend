@@ -1,7 +1,7 @@
 require 'sidekiq/web'
 
 Rails.application.routes.draw do
-  resources :shot_messages_tokens
+  # resources :shot_messages_tokens
   # resources :shot_messages
   if Rails.env.development? || Rails.env.test?
     mount Rswag::Api::Engine => '/api-docs'
