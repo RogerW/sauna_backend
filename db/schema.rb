@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180808124655) do
+ActiveRecord::Schema.define(version: 20180813075513) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -89,6 +89,11 @@ ActiveRecord::Schema.define(version: 20180808124655) do
     t.string "contactable_type"
     t.bigint "contactable_id"
     t.string "middle_name"
+    t.string "confirm_code"
+    t.datetime "confirm_send_at"
+    t.datetime "confirmed_at"
+    t.integer "code_retry_count", default: 0
+    t.integer "code_send_count", default: 0
     t.index ["contactable_type", "contactable_id"], name: "index_contacts_on_contactable_type_and_contactable_id"
     t.index ["phone", "contactable_type", "contactable_id"], name: "index_contacts_on_phone_and_contactable_type_and_contactable_id", unique: true
   end
@@ -207,6 +212,25 @@ ActiveRecord::Schema.define(version: 20180808124655) do
     t.json "template"
   end
 
+  create_table "shot_messages", force: :cascade do |t|
+    t.bigint "user_id"
+    t.string "content"
+    t.string "code"
+    t.string "aasm_state"
+    t.integer "retries"
+    t.string "phone"
+    t.datetime "next_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_shot_messages_on_user_id"
+  end
+
+  create_table "shot_messages_tokens", force: :cascade do |t|
+    t.string "token"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "socrbase", primary_key: "kod_t_st", id: :string, limit: 4, force: :cascade do |t|
     t.string "socrname", limit: 50
     t.string "scname", limit: 10
@@ -265,6 +289,7 @@ ActiveRecord::Schema.define(version: 20180808124655) do
   add_foreign_key "reservations", "saunas"
   add_foreign_key "sauna_descriptions", "saunas"
   add_foreign_key "sauna_galleries", "saunas"
+  add_foreign_key "shot_messages", "users"
   add_foreign_key "users_contacts", "contacts"
   add_foreign_key "users_saunas", "saunas"
 

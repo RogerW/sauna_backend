@@ -1,0 +1,2 @@
+class ShotMessagesToken < ApplicationRecord
+end

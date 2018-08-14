@@ -30,28 +30,37 @@ class ReservationsController < ApplicationController
     sauna = Sauna.find(params[:sauna_list_id])
     contact = AppUser.current_user.contact
 
-    sauna_contact = sauna.contacts.find_by phone: contact.phone
+    puts contact.confirmed_at
 
-    unless sauna.contacts.where(phone: contact.phone).exists?
-      sauna_contact = sauna.contacts
-                           .create(
-                             first_name: contact.first_name,
-                             last_name: contact.last_name,
-                             middle_name: contact.middle_name,
-                             phone: contact.phone
-                           )
-    end
+    if contact.confirmed_at
 
-    @resource = @model.new(resource_params.merge(contact_id: sauna_contact.id))
+      sauna_contact = sauna.contacts.find_by phone: contact.phone
 
-    if @resource.save
-      @collection = @model.where(id: @resource.id)
-      # ReservationCancelByNonPaymentWorker.perform_in(20.minutes, @collection) if AppUser.current_user.user?
+      unless sauna.contacts.where(phone: contact.phone).exists?
+        sauna_contact = sauna.contacts
+                             .create(
+                               first_name: contact.first_name,
+                               last_name: contact.last_name,
+                               middle_name: contact.middle_name,
+                               phone: contact.phone
+                             )
+      end
 
-      render json: { msg: 'Сауна забронирована.' }
+      @resource = @model.new(resource_params.merge(contact_id: sauna_contact.id))
+
+      if @resource.save
+        @collection = @model.where(id: @resource.id)
+        # ReservationCancelByNonPaymentWorker.perform_in(20.minutes, @collection) if AppUser.current_user.user?
+
+        render json: { msg: 'Сауна забронирована.',
+                       collection: @resource }
+      else
+        render json: { errors: @resource.errors,
+                       msg: @resource.errors.full_messages.join(', ') }, status: 422
+      end
     else
-      render json: { errors: @resource.errors,
-                     msg: @resource.errors.full_messages.join(', ') }, status: 422
+      render json: { errors: 'Номер не подтвержден',
+                     msg: 'Необходимо подтвердить ваш номер в профиле' }, status: 400
     end
   end
 

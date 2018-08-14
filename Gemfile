@@ -29,6 +29,7 @@ gem 'devise', '~> 4.4.0'
 gem 'faraday'
 gem 'jwt'
 gem 'oauth2'
+gem 'typhoeus'
 
 # for db views
 gem 'scenic'

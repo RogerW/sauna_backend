@@ -1,15 +1,16 @@
 require 'sidekiq/web'
 
 Rails.application.routes.draw do
-  
-  if Rails.env.development? or Rails.env.test?
+  resources :shot_messages_tokens
+  # resources :shot_messages
+  if Rails.env.development? || Rails.env.test?
     mount Rswag::Api::Engine => '/api-docs'
   end
 
   mount Sidekiq::Web => '/sidekiq'
 
   resources :sauna_descriptions
-  
+
   resources :invoices do
     get :pay_in_cash, on: :member
   end
@@ -25,7 +26,10 @@ Rails.application.routes.draw do
     resources :invoices, only: %i[index]
   end
 
-  resources :users_contacts, only: %i[show create]
+  resources :users_contacts, only: %i[show create] do
+    get :send_sms, on: :member
+    get :confirm_phone, on: :member
+  end
 
   resources :bookings, only: %i[index show create]
 
