@@ -88,7 +88,7 @@ class Auth::SessionsController < Devise::SessionsController
     }
     @client_vk = OAuth2::Client.new(
       '6350967',
-      'PTEqoleimmTQvANSO1dF',
+      'Oe278cHRaVmjFQNlbDyU',
       deep_symbolize(vk_client_options)
     )
   end

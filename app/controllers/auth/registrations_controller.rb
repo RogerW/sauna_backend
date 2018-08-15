@@ -15,7 +15,7 @@ class Auth::RegistrationsController < Devise::RegistrationsController
       # exp_payload = {exp: exp, email: current_user.email  }
 
       # token = JWT.encode(exp_payload, ENV['JWT_SECRET_KEY'], 'HS256')
-      # 
+      #
 
       render json: {
         msg: 'Вы успешно зарегистрировались! Вам будет отправлен email с инструкциями.'
@@ -29,7 +29,7 @@ class Auth::RegistrationsController < Devise::RegistrationsController
   end
 
   def edit; end
-  
+
   def new; end
 
   def update
@@ -42,11 +42,9 @@ class Auth::RegistrationsController < Devise::RegistrationsController
     if resource_updated
       bypass_sign_in resource, scope: resource_name
       render json: {
-        msg: 'Вы успешно зарегистрировались!',
-        current_app_user: current_user.public_fields
+        msg: update_needs_confirmation?(resource, prev_unconfirmed_email) ? :update_needs_confirmation : :updated
       }
     else
-      clean_up_passwords resource
       render json: {
         msg: resource.errors.full_messages.first,
         errors: resource.errors

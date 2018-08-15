@@ -49,7 +49,28 @@ class Auth::PasswordsController < Devise::PasswordsController
     end
   end
 
+  def update_password
+    @user = AppUser.current_user
+    if @user.update_with_password(user_params)
+      # Sign in the user by passing validation in case their password changed
+      bypass_sign_in(@user)
+      render json: {
+          msg: "Пароль успешно обновлен",
+        }
+    else
+      render json: {
+        msg: "Неверный текущий пароль",
+        errors: "Неверный текущий пароль"
+      }, status: 403
+    end
+  end
+
   protected
+
+  def user_params
+    # NOTE: Using `strong_parameters` gem
+    params.require(:user).permit(:current_password, :password, :password_confirmation)
+  end
 
   def after_resetting_password_path_for(resource)
     Devise.sign_in_after_reset_password ? after_sign_in_path_for(resource) : new_session_path(resource_name)

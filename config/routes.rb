@@ -66,6 +66,11 @@ Rails.application.routes.draw do
     get 'users/sign_in' => 'auth/sessions#new'
   end
 
+  resource :user, only: [:edit] do
+    collection do
+      put 'update_password'
+    end
+  end
   get 'users/vkontakte' => 'auth/oauth#vkontakte'
 
   resources :sauna_lists, only: %i[index show] do
