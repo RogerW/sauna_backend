@@ -10,7 +10,7 @@
 # Ignore all logfiles and tempfiles.
 /log/*
 /tmp/*
-/public
+/public/*
 !/log/.keep
 !/tmp/.keep
 /doc/*
@@ -18,13 +18,13 @@
 !/public/logo_main.png
 !/public/map_pin.png
 !/public/shadow.png
-!/home/roger/sauna/sauna_backend/public/large/missing.png
-!/home/roger/sauna/sauna_backend/public/large_md/missing.png
-!/home/roger/sauna/sauna_backend/public/large_webp/missing.webp
-!/home/roger/sauna/sauna_backend/public/large_md_webp/missing.webp
-!/home/roger/sauna/sauna_backend/public/meduim/missing.png
-!/home/roger/sauna/sauna_backend/public/meduim_webp/missing.webp
-!/home/roger/sauna/sauna_backend/public/thumb/missing.png
-!/home/roger/sauna/sauna_backend/public/thumb_webp/missing.webp
+!/public/large/missing.png
+!/public/large_md/missing.png
+!/public/large_webp/missing.webp
+!/public/large_md_webp/missing.webp
+!/public/meduim/missing.png
+!/public/meduim_webp/missing.webp
+!/public/thumb/missing.png
+!/public/thumb_webp/missing.webp
 
 .byebug_history
