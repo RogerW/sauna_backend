@@ -21,8 +21,20 @@ class BookingsController < ApplicationController
   private
 
   def set_model
-    sauna_id = params[:sauna_id] || 0
+    @model = Booking.where(user_id: AppUser.current_user.id)
 
-    @model = Booking.where(user_id: AppUser.current_user.id, sauna_id: sauna_id)
+    @model = @model.where(sauna_id: params[:sauna_id]) if params[:sauna_id]
+
+    if params[:start_datetime] && params[:end_datetime]
+      @model = @model.where(
+        start_date_time: Time.at(params[:start_datetime].to_i)..DateTime::Infinity.new
+      )
+    end
+
+    if params[:end_datetime]
+      @model = @model.where(
+        start_date_time: Time.at(0)..Time.at(params[:end_datetime].to_i)
+      )
+    end
   end
 end
