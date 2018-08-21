@@ -55,7 +55,8 @@ class UsersContactsController < ApplicationController
       AppUser.current_user
              .contact
              .update(
-               code_retry_count: (AppUser.current_user.contact.code_retry_count + 1))
+               code_retry_count: (AppUser.current_user.contact.code_retry_count + 1)
+             )
 
       render json: {
         errors: 'Неверный код',
@@ -87,7 +88,9 @@ class UsersContactsController < ApplicationController
         confirm_send_at: Time.now
       )
         AppUser.current_user.shot_messages.create(
-          content: 'Код подтверждения: ' + AppUser.current_user.contact.confirm_code,
+          content: 'Для подтверждения введите' +
+            AppUser.current_user.contact.confirm_code +
+            '. cityprice.club',
           phone: params[:phone]
         )
 
