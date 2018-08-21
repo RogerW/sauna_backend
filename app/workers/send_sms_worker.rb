@@ -86,7 +86,7 @@ class SendSmsWorker
 
       request = Typhoeus::Request.new(
         "http://192.168.88.246/default/en_US/send.html?u=admin&p=admin&l=1&n=#{URI::encode(sms.phone)}&m=#{URI::encode(sms.content)}",
-        method: :get,
+        method: :get
       )
 
       request.on_complete do |response|

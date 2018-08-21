@@ -87,8 +87,10 @@ class UsersContactsController < ApplicationController
         code_send_count: AppUser.current_user.contact.code_send_count + 1,
         confirm_send_at: Time.now
       )
+
+      puts AppUser.current_user.contact.confirm_code
         AppUser.current_user.shot_messages.create(
-          content: 'Для подтверждения введите' +
+          content: 'Для подтверждения введите ' +
             AppUser.current_user.contact.confirm_code +
             '. cityprice.club',
           phone: params[:phone]

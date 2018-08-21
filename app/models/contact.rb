@@ -8,7 +8,7 @@ class Contact < ApplicationRecord
   private
 
   def change_confirm_code
-    return unless phone_changed?
+    return unless phone_changed? || self.confirm_code.nil?
 
     self.confirm_code = (0...4).map { (1..9).to_a[rand(9)] }.join
     self.confirmed_at = nil
