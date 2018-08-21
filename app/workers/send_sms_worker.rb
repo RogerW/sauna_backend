@@ -1,4 +1,4 @@
-require 'uri'
+# require 'uri'
 
 class SendSmsWorker
   include Sidekiq::Worker
@@ -42,7 +42,7 @@ class SendSmsWorker
 
     #   request.run
 
-    # else 
+    # else
     #   token = token.token
     # end
     # puts token
@@ -84,8 +84,14 @@ class SendSmsWorker
 
       # request.run
 
+      puts 'http://192.168.88.246/default/en_US/send.html' \
+      "?u=admin&p=admin&l=1&n=#{CGI.escape(sms.phone)}" \
+      "&m=#{CGI.escape(sms.content)}"
+
       request = Typhoeus::Request.new(
-        "http://192.168.88.246/default/en_US/send.html?u=admin&p=admin&l=1&n=#{URI::encode(sms.phone)}&m=#{URI::encode(sms.content)}",
+        'http://192.168.88.246/default/en_US/send.html' \
+          "?u=admin&p=admin&l=1&n=#{CGI.escape(sms.phone)}" \
+          "&m=#{CGI.escape(sms.content)}",
         method: :get
       )
 
