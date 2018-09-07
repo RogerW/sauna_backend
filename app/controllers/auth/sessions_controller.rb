@@ -15,8 +15,8 @@ class Auth::SessionsController < Devise::SessionsController
       render_sign_in current_user
     else
       render json: {
-        msg: 'Email не найден, либо пароль неверен', status: 401
-      }
+        msg: 'Email не найден, либо пароль неверен'
+      }, status: 401
     end
   end
 
@@ -74,8 +74,8 @@ class Auth::SessionsController < Devise::SessionsController
     # Devise.sign_out_all_scopes ? sign_out : sign_out(resource_name)
 
     render json: {
-      msg: 'Вы вышли из системы.', status: 200
-    }
+      msg: 'Вы вышли из системы.'
+    }, status: 200
   end
 
   private
