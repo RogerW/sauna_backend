@@ -34,7 +34,7 @@ class Auth::ConfirmationsController < Devise::ConfirmationsController
     hmac_secret = ENV['JWT_SECRET_KEY']
 
     exp = Time.now.to_i + 31 * 24 * 3600 # one month
-    exp_payload = { exp: exp, email: current_user.email }
+    exp_payload = { exp: exp, email: current_user.email, role: current_user.role }
 
     token = JWT.encode(exp_payload, hmac_secret, 'HS256')
 
