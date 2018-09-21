@@ -1,4 +1,6 @@
 class Sauna < ApplicationRecord
+  # has_one_attached :logotype
+
   has_attached_file :logotype,
                     styles: {
                       large: {

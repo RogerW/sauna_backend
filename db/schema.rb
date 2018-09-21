@@ -10,11 +10,32 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180813075513) do
+ActiveRecord::Schema.define(version: 2018_09_20_055647) do
 
   # These are extensions that must be enabled in order to support this database
-  enable_extension "plpgsql"
   enable_extension "pg_trgm"
+  enable_extension "plpgsql"
+
+  create_table "active_storage_attachments", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "record_type", null: false
+    t.bigint "record_id", null: false
+    t.bigint "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+  end
+
+  create_table "active_storage_blobs", force: :cascade do |t|
+    t.string "key", null: false
+    t.string "filename", null: false
+    t.string "content_type"
+    t.text "metadata"
+    t.bigint "byte_size", null: false
+    t.string "checksum", null: false
+    t.datetime "created_at", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
 
   create_table "addrobj", primary_key: "aoguid", id: :uuid, default: nil, force: :cascade do |t|
     t.string "areacode", limit: 3
@@ -55,14 +76,14 @@ ActiveRecord::Schema.define(version: 20180813075513) do
     t.integer "operstatus"
     t.uuid "parentguid"
     t.uuid "previd"
-    t.index "formalname gin_trgm_ops", name: "formalname_trgm_idx", using: :gin
-    t.index "offname gin_trgm_ops", name: "offname_trgm_idx", using: :gin
     t.index ["aoguid"], name: "aoguid_pk_idx", unique: true
     t.index ["aoid"], name: "aoid_idx", unique: true
     t.index ["aolevel"], name: "aolevel_idx"
     t.index ["currstatus"], name: "currstatus_idx"
     t.index ["formalname"], name: "formalname_idx"
+    t.index ["formalname"], name: "formalname_trgm_idx", opclass: :gin_trgm_ops, using: :gin
     t.index ["offname"], name: "offname_idx"
+    t.index ["offname"], name: "offname_trgm_idx", opclass: :gin_trgm_ops, using: :gin
     t.index ["parentguid"], name: "parentguid_idx"
     t.index ["shortname", "aolevel"], name: "shortname_aolevel_idx"
     t.index ["shortname"], name: "shortname_idx"

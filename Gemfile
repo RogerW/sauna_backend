@@ -7,11 +7,15 @@ end
 
 # gem 'activerecord-postgis-adapter'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 5.1.2'
+gem 'rails', '~> 5.2.1'
 # Use postgresql as the database for Active Record
 gem 'pg', '~> 0.18'
 # Use Puma as the app server
+gem 'activestorage', '~> 5.2', '>= 5.2.1'
+gem 'bootsnap', require: false
+
 gem 'puma'
+
 gem 'pundit'
 gem 'rabl'
 
@@ -19,13 +23,13 @@ gem 'oj'
 gem 'oj_mimic_json'
 
 gem 'money'
-gem 'money-rails', '~>1'
+gem 'money-rails', '~>1.12'
 
 gem 'active_type'
 gem 'sidekiq', '~> 5.0.5'
 
 gem 'bcrypt'
-gem 'devise', '~> 4.4.0'
+gem 'devise', '~> 4.5.0'
 gem 'faraday'
 gem 'jwt'
 gem 'oauth2'
